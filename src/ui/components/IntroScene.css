@@ -1,0 +1,156 @@
+/* Container de l'overlay d'intro */
+.intro-overlay-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  cursor: pointer;
+  pointer-events: all;
+}
+
+/* Canvas de particules */
+.intro-particles-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+}
+
+/* Vignette circulaire noire qui masque tout sauf le centre */
+.intro-vignette {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at 50% calc(50% + 40px),
+    transparent 0%,
+    transparent 10%,
+    rgba(0, 0, 0, 0.7) 20%,
+    rgba(0, 0, 0, 0.95) 25%,
+    #000000 28%
+  );
+  z-index: 2;
+  transition: opacity 1.5s ease-out;
+}
+
+/* Overlay texte */
+.intro-text-overlay {
+  position: absolute;
+  bottom: 20%;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Instruction avec animation de pulsation */
+.intro-instruction {
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  color: #ffffff;
+  text-shadow:
+    0 0 10px rgba(0, 255, 255, 0.8),
+    0 0 20px rgba(0, 255, 255, 0.5),
+    0 0 30px rgba(0, 255, 255, 0.3);
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  opacity: 0;
+  animation: fadeIn 1.5s ease-in forwards;
+  animation-delay: 0.5s;
+}
+
+/* Animation de pulsation */
+.pulsing {
+  animation:
+    pulse 2s ease-in-out infinite,
+    fadeIn 1.5s ease-in forwards;
+  animation-delay: 0s, 0.5s;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation d'ouverture - le cercle s'agrandit et disparaît */
+.intro-overlay-container.opening .intro-vignette {
+  animation: openCircle 1.5s ease-out forwards;
+}
+
+.intro-overlay-container.opening .intro-text-overlay {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+.intro-overlay-container.opening .intro-particles-canvas {
+  opacity: 0;
+  transition: opacity 0.8s ease-out;
+}
+
+.intro-overlay-container.opening {
+  pointer-events: none;
+}
+
+@keyframes openCircle {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .intro-instruction {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+
+  .intro-vignette {
+    background: radial-gradient(
+      circle at center,
+      transparent 0%,
+      transparent 25%,
+      rgba(0, 0, 0, 0.8) 40%,
+      #000000 65%
+    );
+  }
+}
+
+/* Curseur personnalisé */
+.intro-overlay-container {
+  cursor:
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="rgba(0,255,255,0.3)" stroke="rgb(0,255,255)" stroke-width="2"/></svg>'),
+    pointer;
+}

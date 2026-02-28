@@ -1,0 +1,230 @@
+{
+  "accessories": {
+    "hatPokemon": "Catch'em All!",
+    "hatCrisis": "Who Am I?"
+  },
+  "cheatDetected": {
+    "title": "CHEAT DETECTED",
+    "message": "The system has detected suspicious game manipulation. Any attempt to cheat results in immediate game termination.",
+    "consequences": "Consequences:",
+    "noVacation": "No vacation for the crab",
+    "gameOver": "Game over",
+    "sadCrab": "The crab is sad",
+    "crabQuote": "I would have loved to go on vacation... But you wanted to cheat. Now I'm stuck here forever.",
+    "crabSignature": "A disappointed crab",
+    "restart": "Restart without cheating",
+    "note": "The game will be reset to start on good terms."
+  },
+  "common": {
+    "close": "Close"
+  },
+  "controls": {
+    "title": "Controls",
+    "move": "Move",
+    "interact": "Interact",
+    "map": "Map",
+    "wasd": "WASD / Arrows",
+    "keyInteract": "E Key or Space",
+    "keyMap": "M Key",
+    "keyEsc": "Escape",
+    "settings": "Settings",
+    "understood": "Got it!"
+  },
+  "cv": {
+    "title": "My Resume",
+    "download": "Download Resume",
+    "linkedin": "View LinkedIn",
+    "github": "View GitHub"
+  },
+  "endgame": "Congratulations and thank you for freeing Crab!\n\nBefore going on vacation, feel free to check out my resume on the desktop.",
+  "interactions": {
+    "discovered": "Discovered!"
+  },
+  "intro": {
+    "start": "Press Crab to Start"
+  },
+  "joystick": {
+    "ariaLabel": "Virtual joystick to move the crab"
+  },
+  "progress": {
+    "title": "Progress",
+    "total": "{current} / {total}",
+    "percentage": "{percent}% completed",
+    "congratulations": "Congratulations!",
+    "allDiscovered": "You've discovered all interactive objects! Thanks for exploring my portfolio.",
+    "downloadCV": "Download my resume",
+    "contact": "Contact me",
+    "objects": {
+      "computer": "Computer",
+      "cv": "Resume",
+      "mug": "Mug",
+      "lamp": "Lamp",
+      "poster_1": "Kandinsky Painting",
+      "poster_2": "Chagall Painting",
+      "keypad": "Keypad",
+      "switch": "Switch"
+    }
+  },
+  "scene": {
+    "explore": "Explore the 3D scene and interact with objects to discover all projects and information."
+  },
+  "settings": {
+    "language": "Language",
+    "showControls": "Show controls",
+    "title": "Settings",
+    "sound": "Sound effects",
+    "volume": "Volume",
+    "ambientMusic": "Ambient Music",
+    "keyboardLayout": "Keyboard Layout",
+    "accessories": "Crab Accessories"
+  },
+  "terminal": {
+    "ai_chat": {
+      "greeting": "AI: Hello! I'm a retro AI from 1995.",
+      "explore": "I noticed you're exploring this terminal.",
+      "sarcasticRemark": "How very... analog of you. 😏",
+      "difficulty": "I'm having some difficulties...",
+      "hackerJoke": "Another one who used the \"hacker\" command!"
+    },
+    "alias": {
+      "current": "Current aliases:",
+      "created": "Alias created:"
+    },
+    "bootSequence": {
+      "systemBoot": "SYSTEM BOOT...",
+      "loadingKernel": "LOADING KERNEL... OK",
+      "initMemory": "INITIALIZING MEMORY... OK",
+      "checkingCpu": "CHECKING CPU... OK",
+      "mountingFs": "MOUNTING FILESYSTEM... OK",
+      "startingNetwork": "STARTING NETWORK... OK",
+      "loadingDrivers": "LOADING DRIVERS... OK",
+      "initTerminal": "INITIALIZING TERMINAL...",
+      "version": "RETRO TERMINAL v1.0",
+      "helpPrompt": "Type 'help' for available commands"
+    },
+    "door": {
+      "statusLocked": "DOOR STATUS: LOCKED",
+      "statusPartial": "DOOR STATUS: PARTIAL ({stage}/{total})",
+      "statusComplete": "DOOR STATUS: UNLOCKED",
+      "unlocked": "The door is now unlocked, enter the code then exit!",
+      "alreadyUnlocked": "The door is already unlocked!",
+      "enterPassword": "Enter: door <password>",
+      "newMailNotification": "NOTIFICATION: You have received a new mail",
+      "stageComplete": "STEP {stage}/{total} COMPLETED",
+      "awaitingNext": "AWAITING NEXT AUTHORIZATION",
+      "incorrectPassword": "INCORRECT PASSWORD",
+      "tryAgain": "Try again: door <password>"
+    },
+    "filesystem": {
+      "readmeContent": "If you are reading this, it means you are looking for a way out.\n\nEverything you need is already here.\nNothing has been added.\nNothing has been removed.\n\nThe folders are organized.\nThe files are in their place.\nSome are simply less visible than others.\n\nA diligent employee does not rush.\nThey observe.\nThey understand the structure.\nThen they act.\n\nWhen you have what you need,\nthe door will know what to do.\n",
+      "projectWeb": "# React Web Project - Modern User Interface\n\n## Description\nDevelopment of a modern user interface for a business web application using React and TypeScript. Implementation of reusable components, state management with Zustand, and performance optimization.\n\n## Technologies\n- React 18\n- TypeScript\n- Tailwind CSS\n- Zustand for state management\n- Vite for build\n\n## Features\n- User authentication\n- Interactive dashboard\n- Real-time data management\n- Responsive interface\n\n## Results\nSuccessfully deployed interface, 40% improvement in user satisfaction.",
+      "projectAPI": "# Node.js Backend API - Microservices Architecture\n\n## Description\nDesign and development of a robust REST API for a business management system. Microservices architecture with Express.js, PostgreSQL database integration, and JWT authentication implementation.\n\n## Technologies\n- Node.js\n- Express.js\n- PostgreSQL\n- JWT for authentication\n- Docker for containerization\n- Redis for caching\n\n## Features\n- User and role management\n- Full CRUD for business entities\n- Logging and monitoring\n- Unit and integration tests\n- API documentation with Swagger\n\n## Performance\nAverage response time < 200ms, uptime > 99.9%.",
+      "projectOpti": "# 3D Rendering Optimization - WebGL Performance\n\n## Description\nPerformance optimization of a web 3D application using Three.js. Reduced CPU/GPU load, improved framerate, and optimized memory usage for mobile devices.\n\n## Technologies\n- Three.js\n- WebGL\n- GLSL Shaders\n- React Three Fiber\n- Performance monitoring\n\n## Optimizations\n- LOD (Level of Detail) for 3D models\n- Instancing for repeated objects\n- Texture compression\n- Optimized culling\n- Lazy loading of assets\n\n## Results\n25% framerate improvement on mobile, 60% reduction in memory usage.",
+      "projectCICD": "# CI/CD Pipeline - Deployment Automation\n\n## Description\nImplementation of a complete continuous integration and continuous deployment pipeline for a full-stack application. Automated testing, build, and production deployment.\n\n## Technologies\n- GitHub Actions\n- Docker\n- Kubernetes\n- Jest for testing\n- SonarQube for code quality\n- Vercel/Netlify for deployment\n\n## Features\n- Automated tests (unit, integration, E2E)\n- Static code analysis\n- Automatic deployment\n- Automatic rollback on error\n- Post-deployment monitoring\n\n## Impact\n80% reduction in deployment time, elimination of manual errors.",
+      "sysinfoTitle": "SYSTEM INFORMATION",
+      "sysinfoContent": "OS: RetroOS v1.0\nKernel: 5.15.0-retro\nArchitecture: x86_64\nDEFAULT_CREDENTIAL=cr4b_m4st3r_2025"
+    },
+    "games": {
+      "available": "AVAILABLE MINI-GAMES",
+      "classicArcade": "CLASSIC ARCADE",
+      "status": "Status: ✓ Available",
+      "pong": "pong: Classic Pong",
+      "pongDesc": "Two-player ASCII tennis",
+      "instruction": "Type a game name to launch!",
+      "doom": {
+        "title": "doom: Retro DOOM",
+        "desc": "Retro FPS in your terminal",
+        "instruction": "Click to launch the game and change controls in Options - Setup - Key Bindings.",
+        "back": "Back to terminal"
+      },
+      "snake": {
+        "title": "snake: Classic Snake",
+        "desc": "Eat apples to grow",
+        "instruction": "Use {keyboardLayout} to move. Press Escape to quit.",
+        "gameOver": "Game Over! Final Score: ",
+        "deadWall": "💀 Hit the wall! Game Over!",
+        "deadSelf": "💀 You ate yourself! Game Over!",
+        "finalScore": "Final Score:"
+      }
+    },
+    "help": {
+      "header": "RETRO TERMINAL - COMMAND LIST",
+      "systemCommands": "SYSTEM COMMANDS",
+      "helpDesc": "Show this help message",
+      "clearDesc": "Clear the terminal screen",
+      "exitDesc": "Close the terminal",
+      "sysinfoDesc": "Display system information",
+      "themeDesc": "Toggle terminal theme (green/amber)",
+      "aliasDesc": "Create command aliases",
+      "fileSystem": "FILE SYSTEM",
+      "lsDesc": "List files in current directory",
+      "catDesc": "Display file contents",
+      "cdDesc": "Change directory",
+      "pwdDesc": "Print working directory",
+      "specialCommands": "SPECIAL COMMANDS",
+      "logsDesc": "View logs",
+      "profileDesc": "Display character information",
+      "whoamiDesc": "Who am I?",
+      "mailDesc": "Check your mailbox",
+      "doorDesc": "Open the door",
+      "miniGames": "MINI-GAMES",
+      "gamesDesc": "List all available games",
+      "snakeDesc": "Play Snake game",
+      "pongDesc": "Play Pong game",
+      "doomDesc": "Play DOOM (ASCII version)",
+      "advanced": "ADVANCED",
+      "aiChatDesc": "Talk to a retro sarcastic AI"
+    },
+    "logs": {
+      "title": "Logs History",
+      "log1": "Accessories unlocked: hats earned!",
+      "log2": "Crab Pitt is bored, he starts dancing!",
+      "log3": "Konami code executed\noutput: k0n4m1_c0d3",
+      "log4": "The employee has demonstrated sufficient adaptability.\nLeave approved, combination: *1337*",
+      "log5": "Caffeine level maximum! ☕⚡\nCrab is now in 'Maximum Productivity' mode."
+    },
+    "mails": {
+      "client": "MAIL CLIENT",
+      "inbox": "INBOX - {messagesLength} MESSAGES",
+      "mail1": "From: Management <direction@crabcorp.com>\nSubject: RE: Leave Request\nDate: {date}\n\nCrab 🦀,\nI have received your leave request.\nThe necessary information is available on the workstation, as planned.\nStart by reading the README.md\n\n— Management",
+      "mail2": "From: Management <direction@crabcorp.com>\nSubject: Progress\nDate: {date}\nCrab,\n\nYou found what you were looking for.\nIt was, let's say... expected.\n\nThe next step is not in the system.\nIt has been right before your eyes from the start.\n\nTake the time to look.\nSome prefer to work.\nOthers also know how to observe.\n\n— Management",
+      "mail3": "From: Management <direction@crabcorp.com>\nSubject: 😀󠅛󠄣󠄣󠅠󠅏󠅣󠅝󠄡󠅜󠄡󠅞󠅗\nDate: {date}\nCrab,\n\nRemember to check your mailbox regularly.\nImportant information always passes through here.\n\n🥰󠅛󠄣󠄣󠅠󠅏󠅣󠅝󠄡󠅜󠄡󠅞󠅗\n\n— Management",
+      "mail4": "From: krabby@crabcorp.com\nCrab,\n\nI'm not sure if I should write to you.\nI feel like everything is being watched here.\n\nI can't make any progress, but that message from Kingler... that smiley...\nIt's not like him to add that for no reason.\n\nI wonder if something is hidden there.\nI tried asking ai_chat, but as usual,\nthat old AI is useless and just crashes.\n\nSorry, this isn't very clear.\nI still hope it helps you.\n\nTake care.\n\n— Your colleague Krabby 🦀",
+      "mail5": "From: Management <direction@crabcorp.com>\nSubject: Procedure\nDate: {date}\nCrab,\n\nOriginally, it wasn't even meant to be found.\nToo hard to test, a shortcut left out of fatigue.\nGradius, Contra... If you know the story, you know the sequence.\nOtherwise, this workstation isn't meant for learning.\n\n— Management",
+      "mail6": "From: Management <direction@crabcorp.com>\nSubject: Context\nDate: {date}\nCrab,\n\nYou have followed the procedures well.\nYou even showed initiative.\n\nBut there is still one thing this workstation cannot check alone.\nThe context.\n\nSome parameters are not visible here.\nThey are visible elsewhere.\n\nIf you've made it this far,\nyou already know where to look.\n\n— Management",
+      "mail7": "From: Management <direction@crabcorp.com>\nSubject: Closure\nDate: {date}\nCrab,\n\nI see that you made it all the way to the end.\n\nThis was not planned. Few make it this far.\nEven fewer without getting lost along the way.\n\nDon’t be mistaken:\nthis is not a remarkable achievement, just a tolerated anomaly.\n\nYou can open the door now. Your vacation is granted.\nThe system will be fixed.\n\nEnjoy it. This will not happen again.\n\n— Management"
+    },
+    "profile": {
+      "title": "║ USER PROFILE",
+      "name": "Name: Mr. Crab",
+      "species": "Species: Carcinidae (Common Crab)",
+      "occupation": "Occupation: Full-Stack Blockchain Developer",
+      "level": "Level: 33",
+      "bio": "Bio: A talented crab developer. Loves creating interactive 3D experiences."
+    },
+    "shutdown": {
+      "systemShutdown": "SYSTEM SHUTDOWN",
+      "savingSession": "Saving session...",
+      "closingApps": "Closing applications..."
+    },
+    "theme": {
+      "label": "Theme switched to: {theme}"
+    },
+    "whoami": {
+      "second": "Still you. Did you forget already?",
+      "third": "Seriously? It's still you!",
+      "fourth": "Are you having an existential crisis?",
+      "idCrisis": "IDENTITY CRISIS DETECTED!",
+      "hatOffer": "The system offers you a hat to help you"
+    },
+    "errors": {
+      "commandNotFound": "Command not found: {command}",
+      "help": "Type \"help\" for available commands",
+      "fileNotFound": "{file}: File not found",
+      "dirNotFound": "{dir}: Directory not found",
+      "usage": "Usage: {usage}",
+      "emptyDirectory": "(empty directory)",
+      "incorrectPassword": "Incorrect password."
+    }
+  }
+}

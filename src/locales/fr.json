@@ -1,0 +1,230 @@
+{
+  "accessories": {
+    "hatPokemon": "Attrapez les tous !",
+    "hatCrisis": "Qui suis-je ?"
+  },
+  "cheatDetected": {
+    "title": "TRICHE DÉTECTÉE",
+    "message": "Le système a détecté une manipulation suspecte du jeu. Toute tentative de triche entraîne la fin immédiate du jeu.",
+    "consequences": "Conséquences :",
+    "noVacation": "Pas de vacances pour le crabe",
+    "gameOver": "Partie terminée",
+    "sadCrab": "Le crabe est triste",
+    "crabQuote": "J'aurais tellement aimé partir en vacances... Mais tu as voulu tricher. Maintenant je suis coincé ici pour toujours.",
+    "crabSignature": "Un crabe déçu",
+    "restart": "Recommencer sans tricher",
+    "note": "Le jeu sera réinitialisé pour repartir sur de bonnes bases."
+  },
+  "common": {
+    "close": "Fermer"
+  },
+  "controls": {
+    "title": "Contrôles",
+    "move": "Déplacer",
+    "interact": "Interagir",
+    "map": "Carte",
+    "wasd": "ZQSD / Flèches",
+    "keyInteract": "Touche E ou Espace",
+    "keyMap": "Touche M",
+    "keyEsc": "Échap",
+    "settings": "Paramètres",
+    "understood": "Compris !"
+  },
+  "cv": {
+    "title": "Mon CV",
+    "download": "Télécharger le CV",
+    "linkedin": "Voir LinkedIn",
+    "github": "Voir GitHub"
+  },
+  "endgame": "Félicitations et merci d'avoir libéré Crab !\n\nAvant de partir en vacances, n'hésitez pas à consulter mon CV sur le bureau.",
+  "interactions": {
+    "discovered": "Découvert !"
+  },
+  "intro": {
+    "start": "Appuyez sur Crabe pour commencer"
+  },
+  "joystick": {
+    "ariaLabel": "Joystick virtuel pour déplacer le crabe"
+  },
+  "progress": {
+    "title": "Progression",
+    "total": "{current} / {total}",
+    "percentage": "{percent}% complété",
+    "congratulations": "Félicitations !",
+    "allDiscovered": "Vous avez découvert tous les objets interactifs ! Merci d'avoir exploré mon portfolio.",
+    "downloadCV": "Télécharger mon CV",
+    "contact": "Me contacter",
+    "objects": {
+      "computer": "Ordinateur",
+      "cv": "CV",
+      "mug": "Tasse",
+      "lamp": "Lampe",
+      "poster_1": "Tableau Kandinsky",
+      "poster_2": "Tableau Chagall",
+      "keypad": "Clavier numérique",
+      "switch": "Interrupteur"
+    }
+  },
+  "scene": {
+    "explore": "Explorez la scène 3D et interagissez avec les objets pour découvrir tous les projets et informations."
+  },
+  "settings": {
+    "language": "Langue",
+    "showControls": "Afficher les contrôles",
+    "title": "Paramètres",
+    "sound": "Bruitages",
+    "volume": "Volume",
+    "ambientMusic": "Musique d'ambiance",
+    "keyboardLayout": "Disposition du clavier",
+    "accessories": "Accessoires du crabe"
+  },
+  "terminal": {
+    "ai_chat": {
+      "greeting": "IA : Bonjour ! Je suis une IA rétro de 1995.",
+      "explore": "Je vois que vous explorez ce terminal.",
+      "sarcasticRemark": "Très rétro de votre part. 😏",
+      "difficulty": "J'ai quelques difficultés...",
+      "hackerJoke": "Encore quelqu'un qui a utilisé la commande \"hacker\" !"
+    },
+    "alias": {
+      "current": "Alias actuels :",
+      "created": "Alias créé :"
+    },
+    "bootSequence": {
+      "systemBoot": "SYSTEM BOOT...",
+      "loadingKernel": "LOADING KERNEL... OK",
+      "initMemory": "INITIALIZING MEMORY... OK",
+      "checkingCpu": "CHECKING CPU... OK",
+      "mountingFs": "MOUNTING FILESYSTEM... OK",
+      "startingNetwork": "STARTING NETWORK... OK",
+      "loadingDrivers": "LOADING DRIVERS... OK",
+      "initTerminal": "INITIALIZING TERMINAL...",
+      "version": "RETRO TERMINAL v1.0",
+      "helpPrompt": "Tapez 'help' pour les commandes disponibles"
+    },
+    "door": {
+      "statusLocked": "STATUT DE LA PORTE : VERROUILLÉE",
+      "statusPartial": "STATUT DE LA PORTE : PARTIEL ({stage}/{total})",
+      "statusComplete": "STATUT DE LA PORTE : DÉVERROUILLÉE",
+      "unlocked": "La porte est maintenant déverrouillée, entrez le code puis sortez !",
+      "alreadyUnlocked": "La porte est déjà déverrouillée !",
+      "enterPassword": "Entrez : door <mot de passe>",
+      "newMailNotification": "NOTIFICATION : Vous avez reçu un nouveau mail",
+      "stageComplete": "ÉTAPE {stage}/{total} TERMINÉE",
+      "awaitingNext": "EN ATTENTE DE LA PROCHAINE AUTORISATION",
+      "incorrectPassword": "MOT DE PASSE INCORRECT",
+      "tryAgain": "Réessayez : door <mot de passe>"
+    },
+    "filesystem": {
+      "readmeContent": "Si tu lis ceci, c’est que tu cherches à sortir.\n\nTout ce dont tu as besoin est déjà ici.\nRien n’a été ajouté.\nRien n’a été supprimé.\n\nLes dossiers sont organisés.\nLes fichiers sont à leur place.\nCertains sont simplement moins visibles que d’autres.\n\nUn employé sérieux ne se précipite pas.\nIl observe.\nIl comprend la structure.\nPuis il agit.\n\nQuand tu auras ce qu’il te faut,\nla porte saura quoi en faire.\n",
+      "projectWeb": "# Projet Web React - Interface Utilisateur Moderne\n\n## Description\nDéveloppement d'une interface utilisateur moderne pour une application web d'entreprise utilisant React et TypeScript. Implémentation de composants réutilisables, gestion d'état avec Zustand, et optimisation des performances.\n\n## Technologies\n- React 18\n- TypeScript\n- Tailwind CSS\n- Zustand pour la gestion d'état\n- Vite pour le build\n\n## Fonctionnalités\n- Authentification utilisateur\n- Dashboard interactif\n- Gestion des données en temps réel\n- Interface responsive\n\n## Résultats\nInterface déployée avec succès, amélioration de 40% de la satisfaction utilisateur.",
+      "projectAPI": "# API Backend Node.js - Architecture Microservices\n\n## Description\nConception et développement d'une API REST robuste pour un système de gestion d'entreprise. Architecture en microservices avec Express.js, intégration de base de données PostgreSQL et implémentation d'authentification JWT.\n\n## Technologies\n- Node.js\n- Express.js\n- PostgreSQL\n- JWT pour l'authentification\n- Docker pour la conteneurisation\n- Redis pour le cache\n\n## Fonctionnalités\n- Gestion des utilisateurs et rôles\n- CRUD complet pour les entités métier\n- Logging et monitoring\n- Tests unitaires et d'intégration\n- Documentation API avec Swagger\n\n## Performance\nTemps de réponse moyen < 200ms, taux de disponibilité > 99.9%.",
+      "projectOpti": "# Optimisation Rendu 3D - Performance WebGL\n\n## Description\nOptimisation des performances d'une application 3D web utilisant Three.js. Réduction de la charge CPU/GPU, amélioration du framerate et optimisation de la mémoire pour les appareils mobiles.\n\n## Technologies\n- Three.js\n- WebGL\n- GLSL Shaders\n- React Three Fiber\n- Performance monitoring\n\n## Optimisations réalisées\n- LOD (Level of Detail) pour les modèles 3D\n- Instancing pour les objets répétés\n- Compression des textures\n- Culling optimisé\n- Lazy loading des assets\n\n## Résultats\nAmélioration du framerate de 25% sur mobile, réduction de 60% de l'utilisation mémoire.",
+      "projectCICD": "# Pipeline CI/CD - Automatisation Déploiement\n\n## Description\nMise en place d'un pipeline complet d'intégration continue et déploiement continu pour une application full-stack. Automatisation des tests, build, et déploiement en production.\n\n## Technologies\n- GitHub Actions\n- Docker\n- Kubernetes\n- Jest pour les tests\n- SonarQube pour la qualité du code\n- Vercel/Netlify pour le déploiement\n\n## Fonctionnalités\n- Tests automatisés (unitaires, intégration, E2E)\n- Analyse statique du code\n- Déploiement automatique\n- Rollback automatique en cas d'erreur\n- Monitoring post-déploiement\n\n## Impact\nRéduction de 80% du temps de déploiement, élimination des erreurs manuelles.",
+      "sysinfoTitle": "INFORMATIONS SYSTÈME",
+      "sysinfoContent": "OS: RetroOS v1.0\nKernel: 5.15.0-retro\nArchitecture: x86_64\nDEFAULT_CREDENTIAL=cr4b_m4st3r_2025"
+    },
+    "games": {
+      "available": "MINI-JEUX DISPONIBLES",
+      "classicArcade": "ARCADE CLASSIQUE",
+      "status": "Statut: ✓ Disponible",
+      "pong": "pong: Pong classique",
+      "pongDesc": "Tennis ASCII à deux joueurs",
+      "instruction": "Tapez un nom de jeu pour le lancer !",
+      "doom": {
+        "title": "doom: DOOM rétro",
+        "desc": "FPS rétro dans votre terminal",
+        "instruction": "Cliquez pour lancer le jeu et modifiez les commandes dans Options - Setup - Key Bindings.",
+        "back": "Retour au terminal"
+      },
+      "snake": {
+        "title": "snake: Snake classique",
+        "desc": "Manger des pommes pour grandir",
+        "instruction": "Utilisez {keyboardLayout} pour déplacer. Appuyez sur Échap pour quitter.",
+        "gameOver": "Jeu terminé ! Score final: ",
+        "deadWall": "💀 Vous avez heurté le mur ! Jeu terminé !",
+        "deadSelf": "💀 Vous vous êtes mangé vous-même ! Jeu terminé !",
+        "finalScore": "Score final:"
+      }
+    },
+    "help": {
+      "header": "RETRO TERMINAL - LISTE DES COMMANDES",
+      "systemCommands": "COMMANDES SYSTÈME",
+      "helpDesc": "Afficher cette aide",
+      "clearDesc": "Effacer l'écran du terminal",
+      "exitDesc": "Fermer le terminal",
+      "sysinfoDesc": "Afficher les informations système",
+      "themeDesc": "Changer le thème du terminal (vert/ambre)",
+      "aliasDesc": "Créer des alias de commande",
+      "fileSystem": "SYSTÈME DE FICHIERS",
+      "lsDesc": "Lister les fichiers du dossier actuel",
+      "catDesc": "Afficher le contenu d'un fichier",
+      "cdDesc": "Changer de dossier",
+      "pwdDesc": "Afficher le dossier actuel",
+      "specialCommands": "COMMANDES SPÉCIALES",
+      "logsDesc": "Afficher les logs",
+      "profileDesc": "Afficher les informations du personnage",
+      "whoamiDesc": "Qui suis-je ?",
+      "mailDesc": "Afficher votre boîte mail",
+      "doorDesc": "Ouvrir la porte",
+      "miniGames": "MINI-JEUX",
+      "gamesDesc": "Lister tous les jeux disponibles",
+      "snakeDesc": "Jouer à Snake",
+      "pongDesc": "Jouer à Pong",
+      "doomDesc": "Jouer à DOOM (version ASCII)",
+      "advanced": "AVANCÉ",
+      "aiChatDesc": "Parler à une IA rétro sarcastique"
+    },
+    "logs": {
+      "title": "Historique des logs",
+      "log1": "Accessoires débloqués : chapeaux gagnés !",
+      "log2": "Crab Pitt s'ennuie, il commence à danser !",
+      "log3": "Konami code exécuté\noutput: k0n4m1_c0d3",
+      "log4": "L'employé a fait preuve d'une adaptabilité suffisante.\nCongés approuvés, combinaison: *1337*",
+      "log5": "Niveau de caféine atteint : Productivité Maximale activée ! ⚡"
+    },
+    "mails": {
+      "client": "CLIENT MAIL",
+      "inbox": "REÇU - {messagesLength} MESSAGES",
+      "mail1": "De: Direction <direction@crabcorp.com>\nObjet: RE: Demande de congés\nDate: {date}\nCrab 🦀,\nJ’ai bien pris connaissance de ta demande de congés.\nLes informations nécessaires sont disponibles sur le poste, comme prévu.\nCommence par lire le README.md\n— Direction",
+      "mail2": "De: Direction <direction@crabcorp.com>\nObjet: Progression\nDate: {date}\nCrab,\n\nTu as trouvé ce que tu cherchais.\nC’était, disons… attendu.\n\nLa suite ne se trouve pas dans le système.\nElle est sous tes yeux depuis le début.\n\nPrends le temps de regarder.\nCertains préfèrent travailler.\nD’autres savent aussi observer.\n\n— Direction",
+      "mail3": "De: Direction <direction@crabcorp.com>\nObjet: 😀󠅛󠄣󠄣󠅠󠅏󠅣󠅝󠄡󠅜󠄡󠅞󠅗\nDate: {date}\nCrab,\n\nPense à consulter régulièrement ta messagerie.\nLes informations importantes y transitent toujours.\n\n🥰󠅛󠄣󠄣󠅠󠅏󠅣󠅝󠄡󠅜󠄡󠅞󠅗\n\n— Direction",
+      "mail4": "De: krabby@crabcorp.com\nDate: {date}\nCrab,\n\nJe ne sais pas si je devrais t’écrire.\nJ’ai l’impression que tout est surveillé ici.\n\nJe n'arrive pas à avancer, mais ce message de Krabboss… ce smiley…\nCe n’est pas son genre d’ajouter ça sans raison.\n\nJe me demande si ce n’est pas là que quelque chose se cache.\nJ’ai essayé de demander à ai_chat, mais comme d’habitude,\ncette vieille IA ne sert à rien et finit par planter.\n\nDésolé, ce n’est pas très clair.\nJ’espère quand même que ça pourra t’aider.\n\nFais attention à toi.\n\n— Ton collègue Krabby 🦀",
+      "mail5": "De: Direction <direction@crabcorp.com>\nObjet: Procedure\nDate: {date}\nCrab,\n\nCrab,\n\nÀ l’origine, ce n’était même pas destiné à être trouvé.\nTrop difficile à tester, un raccourci laissé par fatigue.\nGradius, Contra... Si tu connais l’histoire, tu connais la séquence.\nSinon, ce poste n’est pas fait pour apprendre.\n\n— Direction",
+      "mail6": "De: Direction <direction@crabcorp.com>\nObjet: Contexte\nDate: {date}\nCrab,\n\nTu as bien suivi les procédures.\nTu as même fait preuve d’initiative.\n\nMais il reste une chose que ce poste ne peut pas vérifier seul.\nLe contexte.\n\nCertains paramètres ne sont pas visibles ici.\nIls le sont ailleurs.\n\nSi tu es arrivé jusque-là,\ntu sais déjà où regarder.\n\n— Direction",
+      "mail7": "De: Direction <direction@crabcorp.com>\nObjet: Clôture\nDate: {date}\nCrab,\n\nJe constate que tu es allé jusqu’au bout.\n\nCe n’était pas prévu. Peu y arrivent.\nEncore moins sans se perdre en route.\n\nNe t’y trompe pas :\nce n’est pas une réussite remarquable, seulement une anomalie tolérée.\n\nTu peux ouvrir la porte désormais. Les vacances sont accordées.\nLe système sera corrigé.\n\nProfite-en. Cela ne se reproduira pas.\n\n— Direction"
+    },
+    "profile": {
+      "title": "║ PROFIL DE L'UTILISATEUR",
+      "name": "Nom: Mr. Crab",
+      "species": "Espèce: Carcinidae (Crabe commun)",
+      "occupation": "Profession: Développeur Full-Stack Blockchain",
+      "level": "Niveau: 33",
+      "bio": "Bio: Crabe développeur talentueux. Aime créer des expériences 3D interactives."
+    },
+    "shutdown": {
+      "systemShutdown": "ARRÊT DU SYSTÈME",
+      "savingSession": "Sauvegarde de la session...",
+      "closingApps": "Fermeture des applications..."
+    },
+    "theme": {
+      "label": "Thème changé en: {theme}"
+    },
+    "whoami": {
+      "second": "Toujours vous. Vous avez déjà oublié ?",
+      "third": "Sérieusement ? C'est toujours vous !",
+      "fourth": "Vous faites une crise existentielle ?",
+      "idCrisis": "CRISE D'IDENTITÉ DÉTECTÉE !",
+      "hatOffer": "Le système vous offre un chapeau pour vous aider"
+    },
+    "errors": {
+      "commandNotFound": "Commande non trouvée: {command}",
+      "help": "Tapez \"help\" pour les commandes disponibles",
+      "fileNotFound": "{file}: Fichier introuvable",
+      "dirNotFound": "{dir}: Dossier introuvable",
+      "usage": "Usage: {usage}",
+      "emptyDirectory": "(dossier vide)",
+      "incorrectPassword": "Mot de passe incorrect."
+    }
+  }
+}

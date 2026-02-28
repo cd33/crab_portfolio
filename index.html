@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/crab.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Preconnect to speed up third-party resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+
+    <!-- Preload critical resources -->
+    <link rel="modulepreload" href="/src/main.tsx" />
+
+    <title>Crab Portfolio by cd33</title>
+    <meta
+      name="description"
+      content="Explore my interactive 3D portfolio featuring a crab in an office. Discover my projects, skills, and experience in an immersive way."
+    />
+    <meta
+      name="keywords"
+      content="portfolio, 3D, Three.js, React, web developer, interactive projects"
+    />
+    <meta name="author" content="cd33" />
+
+    <!-- Inline Critical CSS for faster FCP -->
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      .skeleton-loader {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: 9999;
+      }
+      .skeleton-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Skeleton loader visible pendant le chargement -->
+    <div id="skeleton-loader" class="skeleton-loader">
+      <div class="skeleton-spinner"></div>
+    </div>
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Supprimer le skeleton une fois React chargé -->
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+          const skeleton = document.getElementById('skeleton-loader');
+          if (skeleton) skeleton.style.display = 'none';
+        }, 100);
+      });
+    </script>
+  </body>
+</html>

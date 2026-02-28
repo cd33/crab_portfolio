@@ -1,0 +1,9 @@
+{
+  "ignore": [
+    "scripts/**",
+    "specs/**"
+  ],
+  "ignoreDependencies": [
+    "@headlessui/react"
+  ]
+}

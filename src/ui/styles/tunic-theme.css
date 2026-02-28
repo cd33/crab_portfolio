@@ -1,0 +1,142 @@
+/* ============================================
+   TUNIC-INSPIRED COLOR PALETTE
+   Style: Pastel tones, soft contrasts, evocative atmosphere
+   ============================================ */
+
+:root {
+  /* Primary Colors - Tunic Nature Palette */
+  --tunic-green: #8bc34a; /* Soft grass green */
+  --tunic-forest: #4a7c4e; /* Deeper forest tone */
+  --tunic-beige: #e8dcc4; /* Warm neutral beige */
+  --tunic-sand: #d4c5a8; /* Sandy warm tone */
+
+  /* Accent Colors - Tunic Magic & UI */
+  --tunic-blue: #64b5f6; /* Soft sky blue */
+  --tunic-steel: #90a4ae; /* Cool steel gray */
+  --tunic-pink: #f48fb1; /* Soft pastel pink */
+  --tunic-gold: #ffd54f; /* Gentle gold accent */
+  --tunic-purple: #9575cd; /* Mystical purple */
+
+  /* Semantic Colors */
+  --tunic-bg-primary: var(--tunic-beige);
+  --tunic-bg-secondary: var(--tunic-sand);
+  --tunic-text-primary: #2c3e50;
+  --tunic-text-secondary: #546e7a;
+  --tunic-interactive: var(--tunic-gold);
+  --tunic-interactive-hover: var(--tunic-blue);
+
+  /* 3D Lighting Colors (for Three.js materials) */
+  --tunic-light-ambient: var(--tunic-beige);
+  --tunic-light-directional: var(--tunic-steel);
+  --tunic-light-ground: var(--tunic-green);
+
+  /* UI Component Colors */
+  --tunic-outline: var(--tunic-gold);
+  --tunic-glow: rgba(255, 213, 79, 0.6);
+  --tunic-shadow: rgba(44, 62, 80, 0.15);
+  --tunic-overlay: rgba(232, 220, 196, 0.95);
+}
+
+/* Dark mode variant (optional) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tunic-bg-primary: #2c3e50;
+    --tunic-bg-secondary: #34495e;
+    --tunic-text-primary: #ecf0f1;
+    --tunic-text-secondary: #bdc3c7;
+  }
+}
+
+/* Utility Classes for Quick Access */
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 8px var(--tunic-glow);
+  }
+  50% {
+    box-shadow:
+      0 0 16px var(--tunic-glow),
+      0 0 24px var(--tunic-glow);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out;
+}
+
+.animate-fadeInSlide {
+  animation: fadeInSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-glow {
+  transition:
+    box-shadow 0.3s ease-in-out,
+    outline 0.3s ease-in-out;
+}
+
+.tunic-green {
+  color: var(--tunic-green);
+}
+.tunic-blue {
+  color: var(--tunic-blue);
+}
+.tunic-gold {
+  color: var(--tunic-gold);
+}
+.tunic-pink {
+  color: var(--tunic-pink);
+}
+
+.tunic-bg-green {
+  background-color: var(--tunic-green);
+}
+.tunic-bg-blue {
+  background-color: var(--tunic-blue);
+}
+.tunic-bg-beige {
+  background-color: var(--tunic-beige);
+}
+
+.tunic-outline-glow {
+  outline: 2px solid var(--tunic-outline);
+  box-shadow: 0 0 8px var(--tunic-glow);
+}
