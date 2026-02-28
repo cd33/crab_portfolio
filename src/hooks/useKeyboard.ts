@@ -17,7 +17,14 @@ export interface KeyboardState {
  * Tracks WASD/Arrow keys for movement and action keys
  */
 export function useKeyboard() {
-  const { isTerminalOpen, isPanelOpen, isCVModalOpen, isSettingsOpen, keyboardLayout } = useStore();
+  const {
+    isTerminalOpen,
+    isPanelOpen,
+    isCVModalOpen,
+    isSettingsOpen,
+    keyboardLayout,
+    mobileInteract,
+  } = useStore();
 
   // Select the correct key mapping based on keyboard layout
   const KEYS = useMemo(
@@ -130,5 +137,9 @@ export function useKeyboard() {
     };
   }, [handleKeyDown, handleKeyUp]);
 
-  return keys;
+  // Return keyboard state, including mobile interact trigger
+  return {
+    ...keys,
+    interact: keys.interact || mobileInteract,
+  };
 }

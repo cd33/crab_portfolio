@@ -9,13 +9,14 @@ interface JoystickPosition {
 interface VirtualJoystickProps {
   onMove: (position: JoystickPosition) => void;
   onStop: () => void;
+  onFirstTouch?: () => void;
 }
 
 /**
  * VirtualJoystick - Touch controls for mobile devices
  * Provides WASD-like movement via touch interface
  */
-export function VirtualJoystick({ onMove, onStop }: VirtualJoystickProps) {
+export function VirtualJoystick({ onMove, onStop, onFirstTouch }: VirtualJoystickProps) {
   const { t } = useI18n();
   const containerRef = useRef<HTMLDivElement>(null);
   const knobRef = useRef<HTMLDivElement>(null);
@@ -25,6 +26,7 @@ export function VirtualJoystick({ onMove, onStop }: VirtualJoystickProps) {
   const touchIdRef = useRef<number | null>(null);
   const centerRef = useRef({ x: 0, y: 0 });
   const maxDistanceRef = useRef(0);
+  const hasTriggeredFirstTouch = useRef(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -48,6 +50,12 @@ export function VirtualJoystick({ onMove, onStop }: VirtualJoystickProps) {
       const touch = e.changedTouches[0];
       touchIdRef.current = touch.identifier;
       setIsActive(true);
+
+      // Trigger first touch callback (for music autoplay)
+      if (!hasTriggeredFirstTouch.current && onFirstTouch) {
+        hasTriggeredFirstTouch.current = true;
+        onFirstTouch();
+      }
       updatePosition(touch.clientX, touch.clientY);
     };
 
@@ -68,6 +76,9 @@ export function VirtualJoystick({ onMove, onStop }: VirtualJoystickProps) {
         touchIdRef.current = null;
         setIsActive(false);
         setPosition({ x: 0, y: 0 });
+        if (knobRef.current) {
+          knobRef.current.style.transform = 'translate(-50%, -50%)';
+        }
         onStop();
       }
     };
@@ -92,9 +103,9 @@ export function VirtualJoystick({ onMove, onStop }: VirtualJoystickProps) {
       setPosition({ x: normalizedX, y: normalizedY });
       onMove({ x: normalizedX, y: normalizedY });
 
-      // Update knob visual position
+      // Update knob visual position (preserve the -50% centering offset from Tailwind)
       if (knobRef.current) {
-        knobRef.current.style.transform = `translate(${clampedX}px, ${clampedY}px)`;
+        knobRef.current.style.transform = `translate(calc(-50% + ${clampedX}px), calc(-50% + ${clampedY}px))`;
       }
     };
 
@@ -110,12 +121,12 @@ export function VirtualJoystick({ onMove, onStop }: VirtualJoystickProps) {
       container.removeEventListener('touchcancel', handleTouchEnd);
       window.removeEventListener('resize', updateDimensions);
     };
-  }, [onMove, onStop]);
+  }, [onFirstTouch, onMove, onStop]);
 
   return (
     <div
       ref={containerRef}
-      className="fixed bottom-8 left-8 w-32 h-32 touch-none select-none z-50"
+      className="fixed bottom-6 left-4 w-36 h-36 touch-none select-none z-50"
       style={{ opacity: 0.7 }}
       aria-label={t('joystick.ariaLabel')}
       role="button"
@@ -124,7 +135,7 @@ export function VirtualJoystick({ onMove, onStop }: VirtualJoystickProps) {
       {/* Joystick base */}
       <div
         className={`
-          w-full h-full rounded-full 
+          w-full h-full rounded-full
           bg-gradient-to-b from-tunic-steel/40 to-tunic-steel/60
           border-4 border-tunic-steel/80
           shadow-lg

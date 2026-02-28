@@ -249,7 +249,7 @@ export function Crab() {
   const isIdle = useIdleDetection(lastActivityTime, 60);
 
   // Footstep sound
-  const footstepWood = useSound('/sounds/footsteps.wav', {
+  const footstepWood = useSound('/sounds/footsteps.mp3', {
     volume: volume * 1,
     enabled: soundEnabled,
     loop: true,

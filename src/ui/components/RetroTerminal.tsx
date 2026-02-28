@@ -453,7 +453,7 @@ export function RetroTerminal() {
         }
 
         const targetDir = args[1];
-        let newPath = '';
+        let newPath: string;
 
         if (targetDir === '/') {
           newPath = '/';
@@ -537,10 +537,10 @@ export function RetroTerminal() {
         addLine(t('terminal.logs.title'), 'output');
         addLine('═'.repeat(t('terminal.logs.title').length), 'output');
         addLine('', 'output');
-        addLine('[LOG] - 15/01/2024', 'output');
+        addLine('[LOG] - 15/01/2025', 'output');
         addLine(t('terminal.logs.log1'), 'output');
         addLine('', 'output');
-        addLine('[LOG] - 20/02/2024', 'output');
+        addLine('[LOG] - 20/02/2025', 'output');
         addLine(t('terminal.logs.log2'), 'output');
         addLine('', 'output');
         if (mugClickCount > 2) {
@@ -709,8 +709,8 @@ export function RetroTerminal() {
         addLine(formatTableLine(`│ ${t('terminal.games.snake.desc')}`), 'output');
         addLine(formatTableLine(`│ ${t('terminal.games.status')}`), 'output');
         addLine(formatTableLine('│'), 'output');
-        addLine(formatTableLine(`│ ${t('terminal.games.pong')}`), 'output');
-        addLine(formatTableLine(`│ ${t('terminal.games.pongDesc')}`), 'output');
+        addLine(formatTableLine(`│ ${t('terminal.games.pong.title')}`), 'output');
+        addLine(formatTableLine(`│ ${t('terminal.games.pong.desc')}`), 'output');
         addLine(formatTableLine(`│ ${t('terminal.games.status')}`), 'output');
         addLine(formatTableLine('│'), 'output');
         addLine(formatTableLine(`│ ${t('terminal.games.doom.title')}`), 'output');

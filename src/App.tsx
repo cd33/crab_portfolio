@@ -41,6 +41,9 @@ const Settings = lazy(() =>
 const VirtualJoystick = lazy(() =>
   import('@ui/components/VirtualJoystick').then((module) => ({ default: module.VirtualJoystick }))
 );
+const MobileButtons = lazy(() =>
+  import('@ui/components/MobileButtons').then((module) => ({ default: module.MobileButtons }))
+);
 
 function App() {
   const { isSupported, isLoading, error } = useWebGLDetection();
@@ -49,8 +52,8 @@ function App() {
   const { showIntro, setShowIntro, isSecurityKeypadOpen } = useStore();
   const [cheatDetected, setCheatDetected] = useState(false);
 
-  // Ambient music
-  useAmbientMusic();
+  // Ambient music - get tryPlay function to trigger music on mobile
+  const { tryPlay: tryPlayMusic } = useAmbientMusic();
 
   // Easter egg tracking
   useAccessoryUnlocker();
@@ -218,7 +221,9 @@ function App() {
               <VirtualJoystick
                 onMove={joystick.handleJoystickMove}
                 onStop={joystick.handleJoystickStop}
+                onFirstTouch={tryPlayMusic}
               />
+              <MobileButtons onFirstTouch={tryPlayMusic} />
             </Suspense>
           )}
           {/* <DebugPanel /> */}

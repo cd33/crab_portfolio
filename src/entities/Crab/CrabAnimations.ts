@@ -13,7 +13,7 @@ import type { Group } from 'three';
  * Dance animation - Rotate and bob up/down
  */
 export function useDanceAnimation(
-  groupRef: React.RefObject<Group>,
+  groupRef: React.RefObject<Group | null>,
   shouldDance: boolean,
   duration: number = 2.0
 ) {
@@ -59,7 +59,7 @@ export function useDanceAnimation(
  * Yawn animation - Subtle rotation left-right and slight tilt back
  */
 export function useYawnAnimation(
-  groupRef: React.RefObject<Group>,
+  groupRef: React.RefObject<Group | null>,
   shouldYawn: boolean,
   duration: number = 1.5
 ) {

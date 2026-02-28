@@ -100,6 +100,11 @@ interface StoreState {
   controlsVisible: boolean;
   showControls: () => void;
   hideControls: () => void;
+
+  // Mobile interaction
+  mobileInteract: boolean;
+  setMobileInteract: (interact: boolean) => void;
+  triggerMobileInteract: () => void;
 }
 
 export const useStore = create<StoreState>((set, get) => ({
@@ -217,6 +222,15 @@ export const useStore = create<StoreState>((set, get) => ({
   hideControls: () => {
     localStorage.setItem('crab-portfolio-controls-seen', 'true');
     set({ controlsVisible: false });
+  },
+
+  // Mobile interaction
+  mobileInteract: false,
+  setMobileInteract: (interact) => set({ mobileInteract: interact }),
+  triggerMobileInteract: () => {
+    set({ mobileInteract: true });
+    // Reset after a short delay to allow detection of the press
+    setTimeout(() => set({ mobileInteract: false }), 100);
   },
 
   // Lamp state

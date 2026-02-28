@@ -7,13 +7,12 @@ import { useEffect, useRef } from 'react';
  * Surveille les manipulations suspectes du store et du jeu
  */
 export function useCheatDetection(onCheatDetected: () => void) {
-  const { unlockedAccessories, discoveredObjects, isDoorUnlocked, doorCount } = useStore();
+  const { unlockedAccessories, discoveredObjects } = useStore();
 
-  const detectionTimerRef = useRef<number>();
+  const detectionTimerRef = useRef<number>(undefined);
   const storeSnapshotRef = useRef<{
     unlockedCount: number;
     discoveredCount: number;
-    doorUnlocked: boolean;
   } | null>(null);
 
   useEffect(() => {
@@ -35,12 +34,6 @@ export function useCheatDetection(onCheatDetected: () => void) {
         }
       }
 
-      // Vérifier si la porte est débloquée sans progression
-      if (isDoorUnlocked && doorCount < 3) {
-        console.warn('🚨 Triche détectée : Porte débloquée sans progression');
-        return true;
-      }
-
       // Vérifier les objets découverts anormaux
       if (discoveredObjects.size > totalObjects) {
         console.warn("🚨 Triche détectée : Nombre d'objets découverts impossible");
@@ -57,7 +50,6 @@ export function useCheatDetection(onCheatDetected: () => void) {
         storeSnapshotRef.current = {
           unlockedCount: unlockedAccessories.size,
           discoveredCount: discoveredObjects.size,
-          doorUnlocked: isDoorUnlocked,
         };
         return false;
       }
@@ -68,7 +60,7 @@ export function useCheatDetection(onCheatDetected: () => void) {
       const accessoryDiff = unlockedAccessories.size - snapshot.unlockedCount;
       const discoveredDiff = discoveredObjects.size - snapshot.discoveredCount;
 
-      // Si plus de 2 accessoires débloqués ou 5 objets découverts en moins de 100ms
+      // Si plus de 2 accessoires débloqués ou 5 objets découverts en moins de 1000ms
       if (accessoryDiff > 2 || discoveredDiff > 5) {
         console.warn('🚨 Triche détectée : Changements suspects trop rapides');
         return true;
@@ -78,7 +70,6 @@ export function useCheatDetection(onCheatDetected: () => void) {
       storeSnapshotRef.current = {
         unlockedCount: unlockedAccessories.size,
         discoveredCount: discoveredObjects.size,
-        doorUnlocked: isDoorUnlocked,
       };
 
       return false;
@@ -150,7 +141,7 @@ export function useCheatDetection(onCheatDetected: () => void) {
       // // Restaurer le localStorage original
       // Storage.prototype.setItem = originalSetItem;
     };
-  }, [discoveredObjects.size, doorCount, isDoorUnlocked, onCheatDetected, unlockedAccessories]);
+  }, [discoveredObjects.size, onCheatDetected, unlockedAccessories]);
 
   // Vérification supplémentaire à chaque changement de store
   useEffect(() => {
@@ -161,11 +152,5 @@ export function useCheatDetection(onCheatDetected: () => void) {
       console.warn('🚨 Incohérence détectée dans le store');
       onCheatDetected();
     }
-  }, [
-    unlockedAccessories.size,
-    discoveredObjects.size,
-    isDoorUnlocked,
-    onCheatDetected,
-    unlockedAccessories,
-  ]);
+  }, [unlockedAccessories.size, discoveredObjects.size, onCheatDetected, unlockedAccessories]);
 }

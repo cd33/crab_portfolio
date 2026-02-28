@@ -40,11 +40,11 @@ export function useJoystickMovement() {
     }
 
     // Convert joystick Y to 3D Z (forward/backward)
-    // Invert Y because joystick down = move forward in 3D
+    // Joystick up = move forward, joystick down = move backward
     return {
       x,
       y: 0,
-      z: -y, // Negative because joystick down = forward
+      z: y, // Positive mapping: joystick up = negative y = forward movement
     } as Vector3;
   }, []);
 

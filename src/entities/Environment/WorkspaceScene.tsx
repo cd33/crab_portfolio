@@ -5,7 +5,7 @@ import { useKeyboard } from '@/hooks/useKeyboard';
 import { useSound } from '@/hooks/useSound';
 import { useStore } from '@/store/useStore';
 import { useGLTF } from '@react-three/drei';
-import type { GroupProps } from '@react-three/fiber';
+import type { ThreeElements } from '@react-three/fiber';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
@@ -88,7 +88,7 @@ const INTERACTIVE_NAMES = [
  * Created in Blender with warm materials and decorations
  * Includes: room structure, desk, computer, coffee mug, plants, decorations
  */
-export function WorkspaceScene(props: GroupProps) {
+export function WorkspaceScene(props: ThreeElements['group']) {
   const { scene } = useGLTF('/models/workspace_scene.glb');
   const {
     soundEnabled,
@@ -309,13 +309,13 @@ export function WorkspaceScene(props: GroupProps) {
         position={[-3, 3, 4.8]}
         rotation={[0, Math.PI, 0]}
         isHighlighted={closestGroup === 'poster1'}
-        img="/kandinsky_wall.png"
+        img="/kandinsky_wall.webp"
       />
       <Poster
         position={[3, 3, 4.8]}
         rotation={[0, Math.PI, 0]}
         isHighlighted={closestGroup === 'poster2'}
-        img="/chagall_wall.png"
+        img="/chagall_wall.webp"
       />
     </group>
   );

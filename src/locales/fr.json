@@ -128,14 +128,17 @@
       "available": "MINI-JEUX DISPONIBLES",
       "classicArcade": "ARCADE CLASSIQUE",
       "status": "Statut: ✓ Disponible",
-      "pong": "pong: Pong classique",
-      "pongDesc": "Tennis ASCII à deux joueurs",
       "instruction": "Tapez un nom de jeu pour le lancer !",
       "doom": {
         "title": "doom: DOOM rétro",
         "desc": "FPS rétro dans votre terminal",
         "instruction": "Cliquez pour lancer le jeu et modifiez les commandes dans Options - Setup - Key Bindings.",
         "back": "Retour au terminal"
+      },
+      "pong": {
+        "title": "pong: Pong classique",
+        "desc": "Tennis ASCII à deux joueurs",
+        "instruction": "Joueur 1: Z/S, Joueur 2: Flèches Haut/Bas. Appuyez sur Échap pour quitter."
       },
       "snake": {
         "title": "snake: Snake classique",
