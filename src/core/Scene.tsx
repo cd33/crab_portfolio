@@ -1,9 +1,11 @@
 import { Crab } from '@/entities/Crab/Crab';
+import { EnvironmentBackground } from '@/entities/Environment/EnvironmentBackground';
 import { WorkspaceScene } from '@/entities/Environment/WorkspaceScene';
-import { Stats } from '@react-three/drei';
+import { AdaptiveDpr, Stats } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { performanceMonitor } from '@utils/performance';
 import { Suspense, useEffect, useState } from 'react';
+import * as THREE from 'three';
 import { Camera } from './Camera';
 import { Lights } from './Lights';
 
@@ -31,7 +33,7 @@ export function Scene({ showStats = import.meta.env.DEV }: SceneProps) {
 
   return (
     <Canvas
-      shadows={quality.shadows}
+      shadows={quality.shadows ? { type: THREE.PCFShadowMap } : false}
       camera={{ position: [0, 6, 8], fov: 50 }}
       gl={{
         alpha: false,
@@ -45,8 +47,11 @@ export function Scene({ showStats = import.meta.env.DEV }: SceneProps) {
       style={{ width: '100%', height: '100%' }}
     >
       {/* Fond d'environnement chaleureux (remplace le noir) */}
-      <color attach="background" args={['#E8DCC4']} />
-      <fog attach="fog" args={['#E8DCC4', 15, 30]} />
+      <color attach="background" args={['#87CEEB']} />
+      <fog attach="fog" args={['#C8D8E8', 30, 75]} />
+
+      {/* Adaptive DPR - automatically lowers resolution when FPS drops */}
+      <AdaptiveDpr pixelated />
 
       {/* Show FPS stats in development */}
       {showStats && <Stats />}
@@ -59,6 +64,9 @@ export function Scene({ showStats = import.meta.env.DEV }: SceneProps) {
 
       {/* Suspense for lazy loading 3D models */}
       <Suspense fallback={null}>
+        {/* 3D environment background (sky, mountains, trees, particles) */}
+        <EnvironmentBackground />
+
         {/* Blender workspace environment */}
         <WorkspaceScene />
 

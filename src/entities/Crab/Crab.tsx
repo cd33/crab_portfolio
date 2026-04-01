@@ -124,11 +124,11 @@ export function Crab() {
       }
     }
 
-    // Activer les ombres sur tous les meshes du crabe
+    // Activer les ombres sélectivement sur le crabe - le corps projette, le sol reçoit
     scene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
-        child.receiveShadow = true;
+        child.receiveShadow = false;
       }
     });
 

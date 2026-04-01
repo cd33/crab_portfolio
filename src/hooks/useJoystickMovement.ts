@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react';
-import type { Vector3 } from 'three';
+import { Vector3 } from 'three';
 
 interface JoystickInput {
   x: number;
@@ -13,6 +13,8 @@ interface JoystickInput {
 export function useJoystickMovement() {
   const joystickInputRef = useRef<JoystickInput>({ x: 0, y: 0 });
   const isActiveRef = useRef(false);
+  // Pre-allocated Vector3 to avoid GC pressure - reused every frame
+  const directionRef = useRef(new Vector3());
 
   const handleJoystickMove = useCallback((position: JoystickInput) => {
     joystickInputRef.current = position;
@@ -26,7 +28,7 @@ export function useJoystickMovement() {
 
   /**
    * Get movement direction from joystick
-   * Returns normalized vector compatible with CrabController
+   * Returns a real Vector3 compatible with CrabController.copy()
    */
   const getMovementDirection = useCallback((): Vector3 | null => {
     if (!isActiveRef.current) return null;
@@ -41,11 +43,7 @@ export function useJoystickMovement() {
 
     // Convert joystick Y to 3D Z (forward/backward)
     // Joystick up = move forward, joystick down = move backward
-    return {
-      x,
-      y: 0,
-      z: y, // Positive mapping: joystick up = negative y = forward movement
-    } as Vector3;
+    return directionRef.current.set(x, 0, y);
   }, []);
 
   return {

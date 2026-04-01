@@ -68,7 +68,7 @@ export const SCENE_BOUNDS = {
 
 export const CAMERA = {
   /** Camera follow distance behind crab */
-  DISTANCE: 8,
+  DISTANCE: 9,
 
   /** Camera height above ground */
   HEIGHT: 6,

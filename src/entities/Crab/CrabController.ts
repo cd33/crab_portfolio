@@ -21,6 +21,11 @@ export class CrabController {
   public wallProximity: number = 0; // Facteur de proximité au mur (0-1)
   private _wallProximityCache = { position: new Vector3(), rotation: 0, value: 0 };
   private _testPoint = new Vector3();
+  // Pre-allocated vectors for update() - avoid GC pressure at 60fps
+  private _direction = new Vector3();
+  private _newPosition = new Vector3();
+  private _testX = new Vector3();
+  private _testZ = new Vector3();
 
   constructor(initialPosition: Vector3 = new Vector3(0, 0, 0)) {
     this.state = {
@@ -114,7 +119,7 @@ export class CrabController {
    */
   update(keys: KeyboardState, deltaTime: number, joystickDirection?: Vector3 | null): CrabState {
     // Calculate movement direction based on input source
-    const direction = new Vector3(0, 0, 0);
+    const direction = this._direction.set(0, 0, 0);
 
     // Prioritize joystick input if available (mobile touch controls)
     if (joystickDirection) {
@@ -149,12 +154,12 @@ export class CrabController {
 
     // Calculate new position with axis-separated collision detection
     // This allows sliding along walls instead of getting stuck
-    const newPosition = this.state.position.clone();
+    const newPosition = this._newPosition.copy(this.state.position);
     const deltaX = this.state.velocity.x * deltaTime;
     const deltaZ = this.state.velocity.z * deltaTime;
 
     // Try moving on X axis only
-    const testX = this.state.position.clone();
+    const testX = this._testX.copy(this.state.position);
     testX.x += deltaX;
     const canMoveX =
       isWithinBounds(testX, {
@@ -165,7 +170,7 @@ export class CrabController {
       }) && !this.collidesWithObstacle(testX);
 
     // Try moving on Z axis only
-    const testZ = this.state.position.clone();
+    const testZ = this._testZ.copy(this.state.position);
     testZ.z += deltaZ;
     const canMoveZ =
       isWithinBounds(testZ, {
@@ -221,17 +226,10 @@ export class CrabController {
   }
 
   /**
-   * Get current crab state (immutable copy)
+   * Get current crab state (direct references - do not mutate externally)
    */
   getState(): CrabState {
-    // Pour la perf, on pourrait retourner directement les références (attention aux effets de bord)
-    // return { ...this.state };
-    return {
-      position: this.state.position.clone(),
-      rotation: this.state.rotation.clone(),
-      velocity: this.state.velocity.clone(),
-      animationState: this.state.animationState,
-    };
+    return this.state;
   }
 
   /**

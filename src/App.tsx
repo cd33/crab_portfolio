@@ -14,8 +14,10 @@ import { Controls } from '@ui/components/Controls';
 import { InfoPanel } from '@ui/components/InfoPanel';
 import { IntroOverlay as IntroScene } from '@ui/components/IntroScene';
 import { MainLayout } from '@ui/layouts/MainLayout';
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useMemo, useState } from 'react';
 import './ui/styles/tunic-theme.css';
+
+const isFr = typeof navigator !== 'undefined' && navigator.language.startsWith('fr');
 
 // Lazy load non-critical components for better performance
 const CVModal = lazy(() =>
@@ -67,41 +69,18 @@ function App() {
   });
 
   // Check for masterpiece code
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
   const isMasterpieceCode = urlParams.get('code') === '325a5651';
 
   // Show loading state during WebGL detection
   if (isLoading) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-          background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        }}
-      >
-        <div style={{ textAlign: 'center' }}>
-          <div
-            style={{
-              width: '50px',
-              height: '50px',
-              border: '5px solid #f3f3f3',
-              borderTop: '5px solid #4a90e2',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite',
-              margin: '0 auto 1rem',
-            }}
-          />
-          <p style={{ color: '#2c3e50', fontSize: '1.2rem' }}>Chargement du portfolio...</p>
-          <style>{`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}</style>
+      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-gray-50 to-blue-100 font-sans">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-800 text-lg">
+            {isFr ? 'Chargement du portfolio...' : 'Loading portfolio...'}
+          </p>
         </div>
       </div>
     );
@@ -113,61 +92,26 @@ function App() {
 
     // Show error message with fallback option
     return (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-          background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-          padding: '2rem',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '600px',
-            background: 'white',
-            borderRadius: '12px',
-            padding: '2rem',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
-            textAlign: 'center',
-          }}
-        >
-          <h1 style={{ color: '#2c3e50', marginBottom: '1rem' }}>WebGL Non Supporté</h1>
-          <p style={{ color: '#555', marginBottom: '1.5rem' }}>
-            Votre navigateur ne supporte pas WebGL, qui est requis pour l'expérience 3D interactive.
+      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-gray-50 to-blue-100 font-sans p-8">
+        <div className="max-w-xl bg-white rounded-xl p-8 shadow-lg text-center">
+          <h1 className="text-gray-800 mb-4 text-2xl font-bold">
+            {isFr ? 'WebGL Non Supporté' : 'WebGL Not Supported'}
+          </h1>
+          <p className="text-gray-600 mb-6">
+            {isFr
+              ? "Votre navigateur ne supporte pas WebGL, qui est requis pour l'expérience 3D interactive."
+              : 'Your browser does not support WebGL, which is required for the interactive 3D experience.'}
           </p>
           {error && (
-            <p
-              style={{
-                background: '#fff3cd',
-                border: '1px solid #ffc107',
-                borderRadius: '6px',
-                padding: '1rem',
-                color: '#856404',
-                marginBottom: '1.5rem',
-              }}
-            >
-              <strong>Détails :</strong> {error}
+            <p className="bg-yellow-50 border border-yellow-400 rounded-md p-4 text-yellow-800 mb-6">
+              <strong>{isFr ? 'Détails' : 'Details'} :</strong> {error}
             </p>
           )}
           <a
             href="/fallback.html"
-            style={{
-              display: 'inline-block',
-              padding: '1rem 2rem',
-              background: '#4a90e2',
-              color: 'white',
-              textDecoration: 'none',
-              borderRadius: '8px',
-              fontWeight: '600',
-              transition: 'background 0.3s',
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.background = '#357abd')}
-            onMouseOut={(e) => (e.currentTarget.style.background = '#4a90e2')}
+            className="inline-block px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white no-underline rounded-lg font-semibold transition-colors"
           >
-            Voir la version HTML du portfolio
+            {isFr ? 'Voir la version HTML du portfolio' : 'View HTML version of the portfolio'}
           </a>
         </div>
       </div>
@@ -178,15 +122,8 @@ function App() {
     return (
       <Suspense
         fallback={
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100vh',
-            }}
-          >
-            Chargement...
+          <div className="flex items-center justify-center h-screen">
+            {isFr ? 'Chargement...' : 'Loading...'}
           </div>
         }
       >

@@ -6,7 +6,8 @@ import { useSound } from '@/hooks/useSound';
 import { useStore } from '@/store/useStore';
 import { useGLTF } from '@react-three/drei';
 import type { ThreeElements } from '@react-three/fiber';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 // Centralisation des groupes interactifs
@@ -83,6 +84,39 @@ const INTERACTIVE_NAMES = [
   'DoorHandle',
 ];
 
+// Shadow configuration - only important objects cast/receive shadows for performance
+const SHADOW_CASTERS = new Set([
+  'Desk',
+  'DeskTop',
+  'Table',
+  'Chair',
+  'ChairSeat',
+  'LaptopBase',
+  'LaptopScreen',
+  'Mug',
+  'MugHandle',
+  'Plant',
+  'FloorLampBase',
+  'FloorLampPole',
+  'FloorLampShade',
+  'Door',
+  'DoorHandle',
+  'CV_Sheet',
+]);
+const SHADOW_RECEIVERS = new Set([
+  'Floor',
+  'Ground',
+  'Rug',
+  'Carpet',
+  'FrontWall',
+  'BackWall',
+  'LeftWall',
+  'RightWall',
+  'Desk',
+  'DeskTop',
+  'Table',
+]);
+
 /**
  * Workspace Scene - 3D isometric low-poly office environment
  * Created in Blender with warm materials and decorations
@@ -132,11 +166,6 @@ export function WorkspaceScene(props: ThreeElements['group']) {
     return meshes;
   }, [scene, isDoorUnlocked]);
 
-  // Utilitaire pour obtenir la position du crabe dans la scène
-  const getCrabPos = useCallback(() => {
-    return crabCtx?.position || { x: 0, y: 0, z: 0 };
-  }, [crabCtx]);
-
   // Utilitaire pour grouper les meshes
   const groupedMeshes = useMemo(() => {
     const groups: Record<string, THREE.Mesh[]> = {};
@@ -150,27 +179,29 @@ export function WorkspaceScene(props: ThreeElements['group']) {
     return groups;
   }, [interactiveMeshes]);
 
-  // Trouve le groupe le plus proche et la distance
+  // Pre-allocated Vector3 for proximity checks - avoids GC in frame loop
+  const _worldPos = useMemo(() => new THREE.Vector3(), []);
+
+  // Trouve le groupe le plus proche et la distance (reads crab position imperatively)
   const getClosestGroup = useCallback(() => {
-    const crabPos = getCrabPos();
-    let closest: { key: string; dist: number } = { key: '', dist: Infinity };
+    const crabPos = crabCtx?.position || { x: 0, y: 0, z: 0 };
+    let closestKey = '';
+    let closestDist = Infinity;
     Object.entries(groupedMeshes).forEach(([key, meshes]) => {
       if (meshes.length === 0) return;
-      const minDist = Math.min(
-        ...meshes.map((m) => {
-          const worldPos = new THREE.Vector3();
-          m.getWorldPosition(worldPos);
-          const dx = worldPos.x - crabPos.x;
-          const dz = worldPos.z - crabPos.z;
-          return Math.sqrt(dx * dx + dz * dz);
-        })
-      );
-      if (minDist < closest.dist) {
-        closest = { key, dist: minDist };
+      for (const m of meshes) {
+        m.getWorldPosition(_worldPos);
+        const dx = _worldPos.x - crabPos.x;
+        const dz = _worldPos.z - crabPos.z;
+        const dist = Math.sqrt(dx * dx + dz * dz);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closestKey = key;
+        }
       }
     });
-    return closest.dist < 1.5 ? closest.key : null;
-  }, [groupedMeshes, getCrabPos]);
+    return closestDist < 1.5 ? closestKey : null;
+  }, [groupedMeshes, crabCtx, _worldPos]);
 
   // Gestionnaire d'interaction
   const handleMeshClick = useCallback(
@@ -222,14 +253,24 @@ export function WorkspaceScene(props: ThreeElements['group']) {
 
   // Activation par touche 'e' uniquement sur front montant et si le groupe change
   const lastActivatedGroupRef = useRef<string | null>(null);
+  const getClosestGroupRef = useRef(getClosestGroup);
+  const groupedMeshesRef = useRef(groupedMeshes);
+  const handleMeshClickRef = useRef(handleMeshClick);
+
+  useEffect(() => {
+    getClosestGroupRef.current = getClosestGroup;
+    groupedMeshesRef.current = groupedMeshes;
+    handleMeshClickRef.current = handleMeshClick;
+  });
+
   useEffect(() => {
     const prev = prevInteractRef.current;
     if (keys.interact && !prev) {
-      const closestKey = getClosestGroup();
+      const closestKey = getClosestGroupRef.current();
       if (closestKey && lastActivatedGroupRef.current !== closestKey) {
-        const meshes = groupedMeshes[closestKey];
+        const meshes = groupedMeshesRef.current[closestKey];
         if (meshes && meshes.length > 0) {
-          handleMeshClick(meshes[0].name);
+          handleMeshClickRef.current(meshes[0].name);
           lastActivatedGroupRef.current = closestKey;
         }
       }
@@ -238,43 +279,56 @@ export function WorkspaceScene(props: ThreeElements['group']) {
       lastActivatedGroupRef.current = null;
     }
     prevInteractRef.current = keys.interact;
-  }, [keys.interact, getClosestGroup, groupedMeshes, handleMeshClick]);
+  }, [keys.interact]);
 
-  // Activer les ombres sur tous les meshes de la scène
+  // Activer les ombres sélectivement - seuls les objets principaux en ont besoin
   useEffect(() => {
     if (!scene) return;
     scene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
+        child.castShadow = SHADOW_CASTERS.has(child.name);
+        child.receiveShadow =
+          SHADOW_RECEIVERS.has(child.name) ||
+          child.name.toLowerCase().includes('floor') ||
+          child.name.toLowerCase().includes('wall');
       }
     });
   }, [scene]);
 
-  // Calculer une fois le groupe le plus proche
-  const closestGroup = getClosestGroup();
+  // Track closest group via useFrame instead of React re-renders.
+  // Throttled to every ~6 frames (~10Hz) to avoid checking every mesh every frame.
+  const [closestGroup, setClosestGroup] = useState<string | null>(null);
+  const prevClosestRef = useRef<string | null>(null);
+  const frameCounter = useRef(0);
 
-  useEffect(() => {
-    if (!scene) return;
-    // Réinitialiser tous les matériaux
-    interactiveMeshes.forEach((mesh) => {
-      const mat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
-      if (mat && mat instanceof THREE.MeshStandardMaterial) {
-        mat.emissive.set(0x000000);
-        mat.emissiveIntensity = 0;
-      }
-    });
-    // Appliquer le surlignage au groupe le plus proche
-    if (closestGroup && groupedMeshes[closestGroup]) {
-      groupedMeshes[closestGroup].forEach((mesh) => {
+  useFrame(() => {
+    // Throttle proximity check - run every 6th frame (~10Hz at 60fps)
+    frameCounter.current++;
+    if (frameCounter.current % 6 !== 0) return;
+
+    const next = getClosestGroup();
+    if (next !== prevClosestRef.current) {
+      prevClosestRef.current = next;
+      setClosestGroup(next);
+      // Apply emissive highlight imperatively
+      interactiveMeshes.forEach((mesh) => {
         const mat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
         if (mat && mat instanceof THREE.MeshStandardMaterial) {
-          mat.emissive.set(0x9575cd);
-          mat.emissiveIntensity = 2.4;
+          mat.emissive.set(0x000000);
+          mat.emissiveIntensity = 0;
         }
       });
+      if (next && groupedMeshes[next]) {
+        groupedMeshes[next].forEach((mesh) => {
+          const mat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+          if (mat && mat instanceof THREE.MeshStandardMaterial) {
+            mat.emissive.set(0x9575cd);
+            mat.emissiveIntensity = 2.4;
+          }
+        });
+      }
     }
-  }, [scene, interactiveMeshes, closestGroup, groupedMeshes]);
+  });
 
   if (!scene) return null;
   // Récupère la position de FloorLampLight dans la scène

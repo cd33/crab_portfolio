@@ -51,15 +51,6 @@ export function Lights() {
             shadow-bias={-0.0001}
           />
 
-          {/* WarmFill - Lumière d'appoint orange */}
-          {/* <pointLight
-            position={[5, 8, 3.79]}
-            intensity={50}
-            color="#FFBF80"
-            distance={20}
-            decay={2}
-          /> */}
-
           {/* DeskLamp - Lumière de bureau orangée */}
           <pointLight
             position={[2, 2.5, 0]}
@@ -75,18 +66,6 @@ export function Lights() {
             distance={8}
             decay={2}
           />
-
-          {/* WindowLight - Lumière de fenêtre */}
-          {/* <pointLight
-            position={[-6, 3, 2]}
-            intensity={40}
-            color="#E6F2FF"
-            distance={12}
-            decay={2}
-          /> */}
-
-          {/* Hemisphere light - Simule l'HDRI ambiant */}
-          {/* <hemisphereLight intensity={0.8} color="#F5E6D3" groundColor="#D4A574" /> */}
         </>
       )}
     </>
