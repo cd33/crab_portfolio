@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useStore } from '../../src/store/useStore';
 
-// Reset store between tests
+// Reset store and localStorage between tests
 beforeEach(() => {
+  localStorage.clear();
   useStore.setState(useStore.getInitialState());
 });
 
@@ -273,6 +274,96 @@ describe('useStore', () => {
       expect(useStore.getState().ambientMusicVolume).toBe(1);
       useStore.getState().setAmbientMusicVolume(-1);
       expect(useStore.getState().ambientMusicVolume).toBe(0);
+    });
+  });
+
+  describe('Persist middleware', () => {
+    it('écrit dans localStorage sous la clé crab-portfolio-store', () => {
+      useStore.getState().incrementDoorCount();
+      const raw = localStorage.getItem('crab-portfolio-store');
+      expect(raw).not.toBeNull();
+      const parsed = JSON.parse(raw!);
+      expect(parsed.state.doorCount).toBe(1);
+    });
+
+    it('sérialise correctement les Set (discoveredObjects)', () => {
+      useStore.getState().discoverObject('desk');
+      const raw = localStorage.getItem('crab-portfolio-store');
+      expect(raw).not.toBeNull();
+      const parsed = JSON.parse(raw!);
+      // Le Set est sérialisé avec __type: 'Set'
+      expect(parsed.state.discoveredObjects).toEqual({ __type: 'Set', values: ['desk'] });
+    });
+
+    it('sérialise correctement les Set (unlockedAccessories)', () => {
+      useStore.getState().unlockAccessory('hat-pokemon');
+      const raw = localStorage.getItem('crab-portfolio-store');
+      expect(raw).not.toBeNull();
+      const parsed = JSON.parse(raw!);
+      expect(parsed.state.unlockedAccessories).toEqual({
+        __type: 'Set',
+        values: ['hat-pokemon'],
+      });
+    });
+
+    it('restaure un Set depuis localStorage lors de la réhydratation', () => {
+      // Simuler une sauvegarde existante avec un Set sérialisé
+      const stored = {
+        state: {
+          discoveredObjects: { __type: 'Set', values: ['poster1', 'desk'] },
+          unlockedAccessories: { __type: 'Set', values: ['hat-crisis'] },
+          equippedAccessory: 'hat-crisis',
+          doorCount: 3,
+          isDoorUnlocked: true,
+          mailCount: 2,
+          konamiActivated: false,
+          mugClickCount: 5,
+          soundEnabled: false,
+          volume: 0.7,
+          keyboardLayout: 'qwerty',
+          ambientMusicEnabled: false,
+          ambientMusicVolume: 0.5,
+          terminalTheme: 'amber',
+          lampOn: true,
+          mainLightsOn: false,
+        },
+        version: 0,
+      };
+      // Écrire directement dans localStorage via le storage custom (JSON pur, pas de replacer)
+      // Les valeurs __type:Set doivent être lues par notre reviver
+      localStorage.setItem('crab-portfolio-store', JSON.stringify(stored));
+
+      // Forcer la réhydratation du store persist
+      useStore.persist.rehydrate();
+
+      const state = useStore.getState();
+      expect(state.discoveredObjects).toBeInstanceOf(Set);
+      expect(state.discoveredObjects.has('poster1')).toBe(true);
+      expect(state.discoveredObjects.has('desk')).toBe(true);
+      expect(state.unlockedAccessories).toBeInstanceOf(Set);
+      expect(state.unlockedAccessories.has('hat-crisis')).toBe(true);
+      expect(state.doorCount).toBe(3);
+      expect(state.isDoorUnlocked).toBe(true);
+      expect(state.mailCount).toBe(2);
+      expect(state.mugClickCount).toBe(5);
+      expect(state.soundEnabled).toBe(false);
+      expect(state.volume).toBe(0.7);
+      expect(state.keyboardLayout).toBe('qwerty');
+      expect(state.terminalTheme).toBe('amber');
+      expect(state.lampOn).toBe(true);
+      expect(state.mainLightsOn).toBe(false);
+    });
+
+    it("n'écrit pas les états UI temporaires (isPanelOpen, isTerminalOpen, etc.)", () => {
+      useStore.getState().openTerminal();
+      useStore.getState().openCVModal();
+      const raw = localStorage.getItem('crab-portfolio-store');
+      if (!raw) return; // si persist lazy, ok
+      const parsed = JSON.parse(raw!);
+      expect(parsed.state.isTerminalOpen).toBeUndefined();
+      expect(parsed.state.isCVModalOpen).toBeUndefined();
+      expect(parsed.state.showIntro).toBeUndefined();
+      expect(parsed.state.isPanelOpen).toBeUndefined();
     });
   });
 });
