@@ -72,3 +72,46 @@ describe('PerformanceMonitor', () => {
     expect(['good', 'warning', 'poor']).toContain(status);
   });
 });
+
+describe('PerformanceMonitor - quality settings', () => {
+  it('should return initial quality settings with shadows enabled', () => {
+    const settings = performanceMonitor.getQualitySettings();
+    expect(settings).toHaveProperty('shadows');
+    expect(settings).toHaveProperty('shadowMapSize');
+    expect(typeof settings.shadows).toBe('boolean');
+    expect(typeof settings.shadowMapSize).toBe('number');
+  });
+
+  it('setQualitySettings should update partial settings', () => {
+    performanceMonitor.setQualitySettings({ shadows: false });
+    const settings = performanceMonitor.getQualitySettings();
+    expect(settings.shadows).toBe(false);
+    // Restore
+    performanceMonitor.resetQuality();
+  });
+
+  it('resetQuality should restore defaults', () => {
+    performanceMonitor.setQualitySettings({ shadows: false, shadowMapSize: 256 });
+    performanceMonitor.resetQuality();
+    const settings = performanceMonitor.getQualitySettings();
+    expect(settings.shadows).toBe(true);
+    expect(settings.shadowMapSize).toBe(1024);
+  });
+
+  it("getQualitySettings should not return a direct reference (can't mutate)", () => {
+    const settings = performanceMonitor.getQualitySettings();
+    settings.shadows = false;
+    settings.shadowMapSize = 0;
+    // Original should be unchanged
+    const fresh = performanceMonitor.getQualitySettings();
+    expect(fresh.shadows).toBe(true);
+    expect(fresh.shadowMapSize).toBe(1024);
+  });
+});
+
+describe('PerformanceMonitor - average FPS', () => {
+  it('getAverageFPS returns fps when history is empty (initial state)', () => {
+    const avg = performanceMonitor.getAverageFPS();
+    expect(avg).toBeGreaterThanOrEqual(0);
+  });
+});
