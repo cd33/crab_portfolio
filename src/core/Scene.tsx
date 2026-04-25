@@ -55,6 +55,9 @@ export function Scene({ showStats = import.meta.env.DEV }: SceneProps) {
       frameloop="always"
       performance={{ min: isMobile ? 0.3 : 0.5 }}
       style={{ width: '100%', height: '100%' }}
+      onCreated={() => {
+        window.__SCENE_READY__ = true;
+      }}
     >
       {/* Fond d'environnement chaleureux (remplace le noir) */}
       <color attach="background" args={['#87CEEB']} />

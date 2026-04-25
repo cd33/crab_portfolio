@@ -1,251 +1,234 @@
+import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Locator for the Three.js canvas (distinct from the intro particles canvas). */
+const threeCanvas = (page: Page) => page.locator('canvas[data-engine*="three.js"]');
+
+/** Wait until the Three.js WebGL context is ready. */
+async function waitForScene(page: Page) {
+  await threeCanvas(page).waitFor({ state: 'visible', timeout: 15_000 });
+  await page.waitForFunction(() => window.__SCENE_READY__ === true, { timeout: 15_000 });
+}
+
+/**
+ * Dismiss the intro overlay if it is present.
+ * Any key triggers the 1.5 s closing animation; we wait for the element to detach.
+ */
+async function dismissIntro(page: Page) {
+  const intro = page.locator('.intro-overlay-container');
+  const isVisible = await intro.isVisible().catch(() => false);
+  if (isVisible) {
+    await page.keyboard.press('Enter');
+    await intro.waitFor({ state: 'detached', timeout: 15_000 });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Interactions with Objects
+// ---------------------------------------------------------------------------
 
 test.describe('Interactions with Objects', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    // Wait for scene to load
-    await page.waitForTimeout(2000);
+    await waitForScene(page);
+    await dismissIntro(page);
   });
 
-  test('should detect interact key (E)', async ({ page }) => {
-    const canvas = page.locator('canvas');
-    await expect(canvas).toBeVisible();
-
-    // Press E key for interaction
+  test('should detect interact key (E) without crashing the scene', async ({ page }) => {
     await page.keyboard.press('e');
-    await page.waitForTimeout(500);
-
-    // Canvas should still be visible
-    await expect(canvas).toBeVisible();
+    await expect(threeCanvas(page)).toBeVisible();
   });
 
-  test('should open panel when interacting with object', async ({ page }) => {
-    // Simulate navigation to an object and interaction
-    // Move forward to potentially reach an object
-    await page.keyboard.press('w');
-    await page.waitForTimeout(500);
-
-    // Try to interact
+  test('should open panel when interacting with a nearby object', async ({ page }) => {
+    for (let i = 0; i < 4; i++) {
+      await page.keyboard.press('w');
+    }
     await page.keyboard.press('e');
-    await page.waitForTimeout(500);
 
-    // Check if a panel/modal appeared
-    const hasPanel = await page
-      .locator('[role="dialog"], .modal, .panel')
-      .isVisible()
-      .catch(() => false);
+    const dialog = page.locator('[role="dialog"]');
+    const dialogOpened = await dialog.isVisible().catch(() => false);
 
-    // The test passes if either a panel is visible OR no panel (because we might not be near an object)
-    expect(typeof hasPanel).toBe('boolean');
+    if (dialogOpened) {
+      await expect(dialog).toBeVisible();
+    } else {
+      await expect(threeCanvas(page)).toBeVisible();
+    }
   });
 
   test('should close panel with Escape key', async ({ page }) => {
-    // Try to open a panel first
     await page.keyboard.press('w');
-    await page.waitForTimeout(300);
     await page.keyboard.press('e');
-    await page.waitForTimeout(500);
 
-    // Press Escape to close
-    await page.keyboard.press('Escape');
-    await page.waitForTimeout(300);
+    const dialog = page.locator('[role="dialog"]');
+    const dialogOpened = await dialog.isVisible().catch(() => false);
 
-    // Check that we're back to the main view
-    const canvas = page.locator('canvas');
-    await expect(canvas).toBeVisible();
-  });
-
-  test('should display project information in panel', async ({ page }) => {
-    // Navigate and interact
-    for (let i = 0; i < 3; i++) {
-      await page.keyboard.press('w');
-      await page.waitForTimeout(200);
+    if (dialogOpened) {
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toBeVisible();
     }
 
-    await page.keyboard.press('e');
-    await page.waitForTimeout(500);
-
-    // Check if panel has content (title, description, etc.)
-    const hasContent = await page
-      .locator('h1, h2, h3, p, a')
-      .isVisible()
-      .catch(() => false);
-
-    // Content should exist somewhere on the page
-    expect(typeof hasContent).toBe('boolean');
+    await expect(threeCanvas(page)).toBeVisible();
   });
 
-  test('should handle clicking on close button', async ({ page }) => {
-    // Try to interact with an object
-    await page.keyboard.press('w');
-    await page.waitForTimeout(300);
+  test('should display content inside an open panel', async ({ page }) => {
+    for (let i = 0; i < 3; i++) {
+      await page.keyboard.press('w');
+    }
     await page.keyboard.press('e');
-    await page.waitForTimeout(500);
 
-    // Look for close button (X, ×, or Close text)
+    const dialog = page.locator('[role="dialog"]');
+    const dialogOpened = await dialog.isVisible().catch(() => false);
+
+    if (dialogOpened) {
+      const hasText = await dialog.locator('h1, h2, h3, p').count();
+      expect(hasText).toBeGreaterThan(0);
+    } else {
+      await expect(threeCanvas(page)).toBeVisible();
+    }
+  });
+
+  test('should handle clicking the close button inside a panel', async ({ page }) => {
+    await page.keyboard.press('w');
+    await page.keyboard.press('e');
+
     const closeButton = page
       .locator('button')
-      .filter({ hasText: /close|×|x/i })
+      .filter({ hasText: /close|×|x|fermer/i })
       .first();
     const hasCloseButton = await closeButton.isVisible().catch(() => false);
 
     if (hasCloseButton) {
       await closeButton.click();
-      await page.waitForTimeout(300);
-
-      // Should return to canvas view
-      const canvas = page.locator('canvas');
-      await expect(canvas).toBeVisible();
+      await expect(page.locator('[role="dialog"]')).not.toBeVisible();
     }
+
+    await expect(threeCanvas(page)).toBeVisible();
   });
 
   test('should show visual indication when near object', async ({ page }) => {
-    // Navigate around the scene
     for (let i = 0; i < 5; i++) {
       await page.keyboard.press('w');
-      await page.waitForTimeout(100);
     }
-
-    // Check if there's any visual feedback (glow, outline, text hint)
-    // This is hard to test visually, so we just verify the scene is still working
-    const canvas = page.locator('canvas');
-    await expect(canvas).toBeVisible();
+    await expect(threeCanvas(page)).toBeVisible();
   });
+
+  // -------------------------------------------------------------------------
+  // Progress Map (M key) - fully deterministic, always testable
+  // -------------------------------------------------------------------------
 
   test('should open progress map with M key', async ({ page }) => {
-    const canvas = page.locator('canvas');
-    await expect(canvas).toBeVisible();
-
-    // Press M to toggle map
     await page.keyboard.press('m');
-    await page.waitForTimeout(500);
-
-    // Check if map/progress UI appeared
-    const hasMap = await page
-      .locator('[role="dialog"], .map, .progress')
-      .isVisible()
-      .catch(() => false);
-
-    expect(typeof hasMap).toBe('boolean');
+    await expect(page.locator('[role="dialog"][aria-labelledby="progress-map-title"]')).toBeVisible(
+      { timeout: 3_000 }
+    );
   });
 
-  test('should toggle progress map on/off', async ({ page }) => {
-    // Open map
-    await page.keyboard.press('m');
-    await page.waitForTimeout(500);
+  test('should close progress map when pressing M again', async ({ page }) => {
+    const progressMap = page.locator('[role="dialog"][aria-labelledby="progress-map-title"]');
 
-    // Close map
     await page.keyboard.press('m');
-    await page.waitForTimeout(500);
+    await expect(progressMap).toBeVisible({ timeout: 3_000 });
 
-    // Should be back to normal view
-    const canvas = page.locator('canvas');
-    await expect(canvas).toBeVisible();
+    await page.keyboard.press('m');
+    await expect(progressMap).not.toBeVisible({ timeout: 3_000 });
+
+    await expect(threeCanvas(page)).toBeVisible();
   });
 
-  test('should handle rapid key presses', async ({ page }) => {
-    // Rapid interaction attempts
+  test('should close progress map with Escape key', async ({ page }) => {
+    const progressMap = page.locator('[role="dialog"][aria-labelledby="progress-map-title"]');
+
+    await page.keyboard.press('m');
+    await expect(progressMap).toBeVisible({ timeout: 3_000 });
+
+    await page.keyboard.press('Escape');
+    await expect(progressMap).not.toBeVisible({ timeout: 3_000 });
+  });
+
+  test('should handle rapid key presses without crashing', async ({ page }) => {
     for (let i = 0; i < 10; i++) {
       await page.keyboard.press('e');
-      await page.waitForTimeout(50);
     }
-
-    // Scene should still be stable
-    const canvas = page.locator('canvas');
-    await expect(canvas).toBeVisible();
+    await expect(threeCanvas(page)).toBeVisible();
   });
 
-  test('should preserve state when closing and reopening panels', async ({ page }) => {
-    // Open panel
+  test('should preserve scene state when opening and closing panels', async ({ page }) => {
     await page.keyboard.press('e');
-    await page.waitForTimeout(500);
-
-    // Close panel
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(300);
-
-    // Open again
     await page.keyboard.press('e');
-    await page.waitForTimeout(500);
-
-    // Scene should still work
-    const canvas = page.locator('canvas');
-    await expect(canvas).toBeVisible();
+    await expect(threeCanvas(page)).toBeVisible();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Accessibility Features
+// ---------------------------------------------------------------------------
 
 test.describe('Accessibility Features', () => {
-  test('should have proper ARIA labels on interactive elements', async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.waitForTimeout(2000);
-
-    // Try to interact and open a panel
-    await page.keyboard.press('e');
-    await page.waitForTimeout(500);
-
-    // Check for ARIA attributes
-    const dialogElements = page.locator('[role="dialog"]');
-    const dialogCount = await dialogElements.count();
-
-    // If dialog exists, it should have proper ARIA
-    if (dialogCount > 0) {
-      const dialog = dialogElements.first();
-      const hasAriaLabel = await dialog.getAttribute('aria-labelledby').catch(() => null);
-      expect(hasAriaLabel !== undefined).toBeTruthy();
-    }
+    await waitForScene(page);
+    await dismissIntro(page);
   });
 
-  test('should handle keyboard navigation in panels', async ({ page }) => {
-    // Open a panel
-    await page.keyboard.press('e');
-    await page.waitForTimeout(500);
+  test('should give dialogs proper ARIA attributes', async ({ page }) => {
+    await page.keyboard.press('m');
+    const dialog = page.locator('[role="dialog"][aria-labelledby="progress-map-title"]');
+    await expect(dialog).toBeVisible({ timeout: 3_000 });
 
-    // Try Tab navigation
-    await page.keyboard.press('Tab');
-    await page.waitForTimeout(100);
-    await page.keyboard.press('Tab');
-    await page.waitForTimeout(100);
+    await expect(dialog).toHaveAttribute('aria-modal', 'true');
+    const title = page.locator('#progress-map-title');
+    await expect(title).toBeVisible();
+    const titleText = await title.textContent();
+    expect(titleText?.trim().length).toBeGreaterThan(0);
+  });
 
-    // Should not crash
-    const canvas = page.locator('canvas');
-    const canvasVisible = await canvas.isVisible().catch(() => false);
-    expect(typeof canvasVisible).toBe('boolean');
+  test('should support keyboard navigation inside the progress map', async ({ page }) => {
+    await page.keyboard.press('m');
+    await page
+      .locator('[role="dialog"][aria-labelledby="progress-map-title"]')
+      .waitFor({ state: 'visible', timeout: 3_000 });
+
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await expect(threeCanvas(page)).toBeVisible();
   });
 });
 
+// ---------------------------------------------------------------------------
+// Mobile Interactions
+// ---------------------------------------------------------------------------
+
 test.describe('Mobile Interactions', () => {
-  test('should work on mobile viewport', async ({ page }) => {
-    // Set mobile viewport
+  test('should render on a mobile viewport', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
-    await page.waitForTimeout(2000);
+    await waitForScene(page);
 
-    // Check if either canvas or fallback is visible
-    const hasCanvas = await page
-      .locator('canvas')
+    const hasCanvas = await threeCanvas(page)
       .isVisible()
       .catch(() => false);
     const hasFallback = await page
       .locator('main, article')
       .isVisible()
       .catch(() => false);
-
     expect(hasCanvas || hasFallback).toBeTruthy();
   });
 
-  test('should show virtual joystick on touch devices', async ({ page }) => {
-    // Simulate touch device
+  test('should show virtual joystick on a touch-device viewport', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
-    await page.waitForTimeout(2000);
+    await waitForScene(page);
 
-    // Look for joystick element (if implemented)
-    const hasJoystick = await page
-      .locator('.joystick, [data-joystick]')
-      .isVisible()
-      .catch(() => false);
-
-    // On mobile, either joystick exists OR regular controls work
-    expect(typeof hasJoystick).toBe('boolean');
+    const joystick = page.locator('[data-testid="virtual-joystick"], .joystick-container');
+    const visible = await joystick.isVisible().catch(() => false);
+    await expect(threeCanvas(page)).toBeVisible();
+    if (visible) {
+      await expect(joystick).toBeVisible();
+    }
   });
 });

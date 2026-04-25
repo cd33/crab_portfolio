@@ -6,6 +6,14 @@
 
 import { Euler, Vector3 } from 'three';
 
+// Global flag set by Scene.tsx once the WebGL context is created.
+// Used by Playwright E2E tests to wait for the 3D scene to be ready.
+declare global {
+  interface Window {
+    __SCENE_READY__?: boolean;
+  }
+}
+
 // ============================================================================
 // Core Entities
 // ============================================================================

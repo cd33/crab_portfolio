@@ -28,6 +28,15 @@ export function ProgressMap() {
     }
   }, [keys.map, toggleProgressMap]);
 
+  useEffect(() => {
+    if (!isProgressMapOpen) return;
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') toggleProgressMap();
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isProgressMapOpen, toggleProgressMap]);
+
   // All interactive objects in the scene
   const allObjects = useMemo(() => {
     return INTERACTIVES_OBJECTS.map((obj) => ({

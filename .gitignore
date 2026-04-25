@@ -31,3 +31,5 @@ agents/
 prompts/
 docs/
 specs/
+playwright-report/
+coverage/

@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD
 
 on:
   push:
@@ -6,94 +6,94 @@ on:
   pull_request:
     branches: [main, develop]
 
+# Shared setup steps factored into a reusable anchor (used inline below)
 jobs:
+  # ─────────────────────────────────────────────────────────────────────────
+  # 1. Lint - fast-fail before running anything expensive
+  # ─────────────────────────────────────────────────────────────────────────
   lint:
-    name: Lint Code
+    name: Lint
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
-      - name: Run ESLint
-        run: pnpm run lint
+      - name: ESLint
+        run: pnpm lint
 
-  test:
-    name: Run Tests
+  # ─────────────────────────────────────────────────────────────────────────
+  # 2. Unit & Integration tests (Vitest, no browser)
+  # ─────────────────────────────────────────────────────────────────────────
+  unit-tests:
+    name: Unit & Integration tests
     runs-on: ubuntu-latest
+    needs: lint
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
-      - name: Run unit tests
-        run: pnpm run test:unit
+      - name: Type-check
+        run: pnpm exec tsc --noEmit
 
-      - name: Run integration tests
-        run: pnpm run test:integration
+      - name: Unit tests
+        run: pnpm exec vitest run --reporter=verbose
 
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
-        if: always()
-        with:
-          file: ./coverage/coverage-final.json
-          flags: unittests
-          name: codecov-umbrella
-
+  # ─────────────────────────────────────────────────────────────────────────
+  # 3. Build + bundle-size guard
+  # ─────────────────────────────────────────────────────────────────────────
   build:
-    name: Build Project
+    name: Build & bundle size
     runs-on: ubuntu-latest
-    needs: [lint, test]
+    needs: unit-tests
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
-      - name: Build project
-        run: pnpm run build
+      - name: Build
+        run: pnpm build
 
-      - name: Check bundle size
+      - name: Check bundle size (7 MB limit)
         run: |
           BUNDLE_SIZE=$(du -sk dist | cut -f1)
           echo "Bundle size: ${BUNDLE_SIZE}KB"
           if [ $BUNDLE_SIZE -gt 7168 ]; then
-            echo "❌ Bundle size exceeds 7MB limit!"
+            echo "❌ Bundle size exceeds 7 MB limit!"
             exit 1
           else
             echo "✅ Bundle size is within limits"
@@ -106,93 +106,90 @@ jobs:
           path: dist/
           retention-days: 7
 
-  # e2e:
-  #   name: E2E Tests
-  #   runs-on: ubuntu-latest
-  #   needs: [build]
+  # ─────────────────────────────────────────────────────────────────────────
+  # 4. E2E tests (Playwright, Chromium only in CI)
+  #    Runs in parallel with `build` - uses the Vite dev server, not the dist.
+  # ─────────────────────────────────────────────────────────────────────────
+  e2e-tests:
+    name: E2E tests (Chromium)
+    runs-on: ubuntu-latest
+    needs: unit-tests
 
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Install pnpm
-  #       run: npm install -g pnpm
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: '20'
-  #         cache: 'pnpm'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
 
-  #     - name: Install dependencies
-  #       run: pnpm install
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-  #     - name: Install Playwright
-  #       run: npx playwright install --with-deps
+      - name: Install Playwright browsers (Chromium only)
+        run: pnpm exec playwright install chromium --with-deps
 
-  #     - name: Run E2E tests
-  #       run: pnpm run test:e2e
+      - name: Run E2E tests
+        run: pnpm exec playwright test --project=chromium
+        env:
+          CI: true
 
-  #     - name: Upload test results
-  #       uses: actions/upload-artifact@v4
-  #       if: always()
-  #       with:
-  #         name: playwright-report
-  #         path: playwright-report/
-  #         retention-days: 7
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
 
+  # ─────────────────────────────────────────────────────────────────────────
+  # 5. Deploy preview (uncomment + add secrets to enable)
+  # ─────────────────────────────────────────────────────────────────────────
   # deploy-preview:
-  #   name: Deploy Preview
+  #   name: Deploy Preview (Netlify)
   #   runs-on: ubuntu-latest
-  #   # needs: [build, e2e]
-  #   needs: [build]
+  #   needs: [build, e2e-tests]
   #   if: github.event_name == 'pull_request'
-
   #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-
-  #     - name: Download build artifacts
-  #       uses: actions/download-artifact@v4
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/download-artifact@v4
   #       with:
   #         name: dist
   #         path: dist/
-
-  #     - name: Deploy to Netlify (Preview)
-  #       uses: nwtgck/actions-netlify@v2
+  #     - uses: nwtgck/actions-netlify@v2
   #       with:
   #         publish-dir: './dist'
   #         production-deploy: false
   #         github-token: ${{ secrets.GITHUB_TOKEN }}
-  #         deploy-message: 'Deploy from GitHub Actions'
+  #         deploy-message: 'Preview deploy from PR #${{ github.event.number }}'
   #       env:
   #         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
   #         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
+  # ─────────────────────────────────────────────────────────────────────────
+  # 6. Deploy production (uncomment + add secrets to enable)
+  # ─────────────────────────────────────────────────────────────────────────
   # deploy-production:
-  #   name: Deploy Production
+  #   name: Deploy Production (Netlify)
   #   runs-on: ubuntu-latest
-  #   # needs: [build, e2e]
-  #   needs: [build]
+  #   needs: [build, e2e-tests]
   #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
   #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-
-  #     - name: Download build artifacts
-  #       uses: actions/download-artifact@v4
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/download-artifact@v4
   #       with:
   #         name: dist
   #         path: dist/
-
-  #     - name: Deploy to Netlify (Production)
-  #       uses: nwtgck/actions-netlify@v2
+  #     - uses: nwtgck/actions-netlify@v2
   #       with:
   #         publish-dir: './dist'
   #         production-deploy: true
   #         github-token: ${{ secrets.GITHUB_TOKEN }}
-  #         deploy-message: 'Production deployment from main branch'
+  #         deploy-message: 'Production deploy from ${{ github.sha }}'
   #       env:
   #         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
   #         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
