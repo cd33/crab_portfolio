@@ -14,12 +14,21 @@ interface SceneProps {
   showStats?: boolean;
 }
 
+const isMobile =
+  typeof navigator !== 'undefined' &&
+  (navigator.maxTouchPoints > 0 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent));
+
 /**
  * Main Three.js Scene Component
  * Renders the 3D environment with crab, lights, camera, and office furniture
  */
 export function Scene({ showStats = import.meta.env.DEV }: SceneProps) {
-  const [quality, setQuality] = useState(performanceMonitor.getQualitySettings());
+  const [quality, setQuality] = useState(() => {
+    const q = performanceMonitor.getQualitySettings();
+    // Sur mobile, on commence directement avec des ombres désactivées
+    if (isMobile) return { shadows: false, shadowMapSize: 512 };
+    return q;
+  });
 
   // Monitor performance and adjust quality
   useEffect(() => {
@@ -33,17 +42,18 @@ export function Scene({ showStats = import.meta.env.DEV }: SceneProps) {
 
   return (
     <Canvas
-      shadows={quality.shadows ? { type: THREE.PCFShadowMap } : false}
+      shadows={quality.shadows ? { type: THREE.PCFSoftShadowMap } : false}
       camera={{ position: [0, 6, 8], fov: 50 }}
       gl={{
         alpha: false,
         powerPreference: 'high-performance',
         stencil: false,
         depth: true,
+        antialias: !isMobile, // désactiver l'anti-aliasing sur mobile pour les perfs
       }}
-      dpr={[1, 2]} // Limit pixel ratio to max 2 for performance
+      dpr={isMobile ? [0.5, 1] : [1, 2]} // DPR réduit sur mobile
       frameloop="always"
-      performance={{ min: 0.5 }}
+      performance={{ min: isMobile ? 0.3 : 0.5 }}
       style={{ width: '100%', height: '100%' }}
     >
       {/* Fond d'environnement chaleureux (remplace le noir) */}

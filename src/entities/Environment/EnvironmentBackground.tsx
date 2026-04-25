@@ -3,6 +3,10 @@ import { useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
+const isMobile =
+  typeof navigator !== 'undefined' &&
+  (navigator.maxTouchPoints > 0 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent));
+
 // ============================================
 // Seeded PRNG for deterministic placement
 // ============================================
@@ -28,9 +32,9 @@ function visiblePos(minD: number, maxD: number): [number, number, number] {
   return [Math.sin(angle) * d, 0, Math.cos(angle) * d];
 }
 
-// ============================================
 // Pre-generated data - VISIBLE ARC ONLY
-// ============================================
+// Sur mobile on réduit le nombre de palmiers et de coquillages
+const PALM_COUNT = isMobile ? 6 : 10;
 
 interface PalmInfo {
   position: [number, number, number];
@@ -40,7 +44,7 @@ interface PalmInfo {
 }
 
 // Generate palmiers balanced left & right
-const PALMS: PalmInfo[] = Array.from({ length: 10 }, (_, i) => {
+const PALMS: PalmInfo[] = Array.from({ length: PALM_COUNT }, (_, i) => {
   // Force alternating sides: even = left (-X), odd = right (+X)
   const side = i % 2 === 0 ? -1 : 1;
   const d = 10 + rng() * 14;
@@ -88,6 +92,9 @@ const ISLANDS: IslandInfo[] = [
   { position: [-40, 0, -50], radius: 4, height: 5, hasPalm: true },
 ];
 
+// Résolution de l'océan : réduite sur mobile pour économiser les calculs CPU par frame
+const OCEAN_SEGMENTS = isMobile ? 24 : 48;
+
 // ============================================
 // OCEAN with per-frame vertex animation
 // ============================================
@@ -98,9 +105,10 @@ function Ocean({ night }: { night: boolean }) {
   const frameCount = useRef(0);
 
   useFrame(({ clock }) => {
-    // Throttle ocean animation to every other frame (~30Hz visual)
+    // Sur mobile on anime moins souvent (~15Hz au lieu de ~30Hz)
     frameCount.current++;
-    if (frameCount.current % 2 !== 0) return;
+    const throttle = isMobile ? 4 : 2;
+    if (frameCount.current % throttle !== 0) return;
 
     const geo = geoRef.current;
     if (!geo) return;
@@ -123,15 +131,16 @@ function Ocean({ night }: { night: boolean }) {
           Math.sin((x + y) * 0.025 + t * 0.25) * 0.12);
     }
     geo.attributes.position.needsUpdate = true;
-    // Recompute normals only every 4th update (~7.5Hz) — visual difference is negligible
-    if (frameCount.current % 8 === 0) {
+    // Recompute normals moins souvent sur mobile
+    const normalThrottle = isMobile ? 16 : 8;
+    if (frameCount.current % normalThrottle === 0) {
       geo.computeVertexNormals();
     }
   });
 
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.35, 0]}>
-      <planeGeometry ref={geoRef} args={[300, 300, 48, 48]} />
+      <planeGeometry ref={geoRef} args={[300, 300, OCEAN_SEGMENTS, OCEAN_SEGMENTS]} />
       <meshStandardMaterial
         color={night ? '#081828' : '#0088cc'}
         roughness={night ? 0.5 : 0.2}
@@ -198,8 +207,13 @@ function PalmTree({ data, night }: { data: PalmInfo; night: boolean }) {
   const crownRef = useRef<THREE.Group>(null);
   const frondRefs = useRef<THREE.Group[]>([]);
   const windPhase = data.position[0] * 0.5 + data.position[2] * 0.3;
+  const palmFrameCount = useRef(0);
 
   useFrame(({ clock }) => {
+    // Sur mobile, on anime les palmiers toutes les 3 frames (~20Hz) au lieu de chaque frame
+    palmFrameCount.current++;
+    if (isMobile && palmFrameCount.current % 3 !== 0) return;
+
     const t = clock.elapsedTime;
     if (upperTrunkRef.current) {
       upperTrunkRef.current.rotation.x = leanZ * 0.5 + Math.sin(t * 0.7 + windPhase) * 0.025;
@@ -350,9 +364,14 @@ function DistantIslands({ night }: { night: boolean }) {
 
 function Foam({ night }: { night: boolean }) {
   const ref = useRef<THREE.Group>(null);
+  const foamFrameCount = useRef(0);
 
   useFrame(({ clock }) => {
     if (!ref.current) return;
+    // Throttle mousse sur mobile
+    foamFrameCount.current++;
+    if (isMobile && foamFrameCount.current % 3 !== 0) return;
+
     const t = clock.elapsedTime;
     ref.current.children.forEach((mesh, i) => {
       const phase = (i / 3) * Math.PI * 2;
@@ -390,6 +409,7 @@ function Sailboat({ night }: { night: boolean }) {
   const flagRef = useRef<THREE.Mesh>(null);
   const mainSailRef = useRef<THREE.Mesh>(null);
   const jibSailRef = useRef<THREE.Mesh>(null);
+  const boatFrameCount = useRef(0);
 
   // Custom hull – smaller bevel for clean shape
   const hullGeo = useMemo(() => {
@@ -488,19 +508,23 @@ function Sailboat({ night }: { night: boolean }) {
 
   useFrame(({ clock }) => {
     if (!ref.current) return;
+    boatFrameCount.current++;
     const t = clock.elapsedTime;
 
-    // Drift right to left
+    // Drift right to left (toujours exécuté pour la position)
     const x = 55 - ((t * 0.8) % 110);
     ref.current.position.x = x;
+
+    // Sur mobile, on throttle les animations secondaires du bateau
+    if (isMobile && boatFrameCount.current % 3 !== 0) return;
 
     // Ocean rocking – reduced heave so it doesn't float above water
     ref.current.position.y = -0.3 + Math.sin(t * 0.6) * 0.08 + Math.sin(t * 1.1) * 0.03;
     ref.current.rotation.z = Math.sin(t * 0.4) * 0.03 + Math.sin(t * 0.9) * 0.01;
     ref.current.rotation.x = Math.sin(t * 0.5 + 0.5) * 0.015;
 
-    // Animate flag
-    if (flagRef.current) {
+    // Animate flag (skip sur mobile)
+    if (!isMobile && flagRef.current) {
       const flagPos = flagRef.current.geometry.attributes.position.array as Float32Array;
       for (let i = 0; i < flagPos.length; i += 3) {
         const u = (flagPos[i] + 0.25) / 0.5;

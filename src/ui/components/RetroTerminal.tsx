@@ -821,7 +821,7 @@ export function RetroTerminal() {
       aria-label="Terminal"
     >
       {/* CRT Screen Container */}
-      <div className="relative w-full h-full max-w-7xl max-h-screen p-8">
+      <div className="relative w-full h-full max-w-7xl max-h-screen p-0 sm:p-8">
         {/* CRT Bezel Effect */}
         <div className="absolute inset-0 bg-gradient-to-b from-gray-800 via-gray-900 to-black rounded-3xl shadow-2xl" />
 
@@ -900,7 +900,7 @@ export function RetroTerminal() {
                   inputRef.current?.focus();
                 }
               }}
-              className="relative w-full h-full overflow-y-auto p-6 font-mono text-sm sm:text-base cursor-text"
+              className="relative w-full h-full overflow-y-auto overflow-x-auto p-2 sm:p-6 font-mono text-xs sm:text-sm cursor-text"
               style={{ fontFamily: '"Courier New", Courier, monospace' }}
             >
               {isPlayingGame ? (
@@ -929,7 +929,7 @@ export function RetroTerminal() {
                     <div
                       key={index}
                       className={currentTheme.textClass}
-                      style={{ textShadow: `0 0 8px ${currentTheme.glow}` }}
+                      style={{ textShadow: `0 0 8px ${currentTheme.glow}`, whiteSpace: 'pre' }}
                     >
                       {line}
                     </div>
@@ -947,7 +947,7 @@ export function RetroTerminal() {
                     <div
                       key={line.id}
                       className={`mb-1 ${line.type === 'error' ? 'text-red-500' : currentTheme.textClass}`}
-                      style={{ textShadow: `0 0 8px ${currentTheme.glow}` }}
+                      style={{ textShadow: `0 0 8px ${currentTheme.glow}`, whiteSpace: 'pre' }}
                     >
                       {line.text}
                     </div>

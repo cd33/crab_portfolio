@@ -3,6 +3,10 @@
  * Centralized configuration values for consistent behavior across the application
  */
 
+const isMobile =
+  typeof navigator !== 'undefined' &&
+  (navigator.maxTouchPoints > 0 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent));
+
 // ============================================
 // MOVEMENT & PHYSICS
 // ============================================
@@ -68,10 +72,10 @@ export const SCENE_BOUNDS = {
 
 export const CAMERA = {
   /** Camera follow distance behind crab */
-  DISTANCE: 9,
+  DISTANCE: isMobile ? 12 : 10,
 
   /** Camera height above ground */
-  HEIGHT: 6,
+  HEIGHT: isMobile ? 8 : 7,
 
   /** Camera look-at height offset */
   LOOK_AT_HEIGHT: 1,
