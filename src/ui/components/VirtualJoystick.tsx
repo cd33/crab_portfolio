@@ -179,7 +179,7 @@ export function VirtualJoystick({ onMove, onStop, onFirstTouch }: VirtualJoystic
 
       {/* Debug info (dev only) */}
       {import.meta.env.DEV && isActive && (
-        <div className="absolute -top-8 left-0 right-0 text-center text-xs text-tunic-steel font-mono bg-white/90 rounded px-2 py-1">
+        <div className="absolute -top-8 left-0 right-0 text-center text-xs text-tunic-steel font-mono bg-white/90 rounded-sm px-2 py-1">
           x: {position.x.toFixed(2)} y: {position.y.toFixed(2)}
         </div>
       )}

@@ -71,7 +71,7 @@ export function SecurityKeypadModal() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs animate-fadeIn"
       role="dialog"
       aria-modal="true"
       aria-labelledby="keypad-modal-title"
@@ -107,7 +107,7 @@ export function SecurityKeypadModal() {
             {[0, 1, 2, 3, 4, 5].map((i) => (
               <div
                 key={i}
-                className="w-12 h-14 bg-black/60 border-2 border-slate-600 rounded flex items-center justify-center text-2xl font-mono text-green-400"
+                className="w-12 h-14 bg-black/60 border-2 border-slate-600 rounded-sm flex items-center justify-center text-2xl font-mono text-green-400"
                 style={{ textShadow: '0 0 8px rgba(74, 222, 128, 0.8)' }}
               >
                 {code[i] || ''}

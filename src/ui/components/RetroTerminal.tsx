@@ -878,7 +878,7 @@ export function RetroTerminal() {
                 {t('terminal.games.doom.instruction')}
               </div>
               <button
-                className="mt-4 px-4 py-2 bg-black border rounded"
+                className="mt-4 px-4 py-2 bg-black border border-gray-200 rounded-sm"
                 style={{
                   color: currentTheme.text,
                   borderColor: currentTheme.text,

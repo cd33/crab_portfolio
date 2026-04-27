@@ -79,7 +79,7 @@ export function Settings() {
                   ambientMusicEnabled && !ambientMusicPlaying ? true : !ambientMusicEnabled
                 )
               }
-              className={`p-2 rounded transition-colors ${
+              className={`p-2 rounded-sm transition-colors ${
                 ambientMusicPlaying
                   ? 'bg-tunic-green hover:bg-tunic-dark-green text-white'
                   : 'bg-gray-300 hover:bg-gray-400 text-gray-600'
@@ -121,7 +121,7 @@ export function Settings() {
             </span>
             <button
               onClick={toggleSound}
-              className={`p-2 rounded transition-colors ${
+              className={`p-2 rounded-sm transition-colors ${
                 soundEnabled
                   ? 'bg-tunic-green hover:bg-tunic-dark-green text-white'
                   : 'bg-gray-300 hover:bg-gray-400 text-gray-600'
@@ -167,7 +167,7 @@ export function Settings() {
                 setLocale('fr');
                 setKeyboardLayout('azerty');
               }}
-              className={`flex-1 px-3 py-2 rounded transition-all ${
+              className={`flex-1 px-3 py-2 rounded-sm transition-all ${
                 locale === 'fr'
                   ? 'bg-tunic-steel text-white shadow-md'
                   : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
@@ -180,7 +180,7 @@ export function Settings() {
                 setLocale('en');
                 setKeyboardLayout('qwerty');
               }}
-              className={`flex-1 px-3 py-2 rounded transition-all ${
+              className={`flex-1 px-3 py-2 rounded-sm transition-all ${
                 locale === 'en'
                   ? 'bg-tunic-steel text-white shadow-md'
                   : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
@@ -199,7 +199,7 @@ export function Settings() {
           <div className="flex gap-2">
             <button
               onClick={() => setKeyboardLayout('azerty')}
-              className={`flex-1 px-3 py-2 rounded transition-all ${
+              className={`flex-1 px-3 py-2 rounded-sm transition-all ${
                 keyboardLayout === 'azerty'
                   ? 'bg-tunic-steel text-white shadow-md'
                   : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
@@ -209,7 +209,7 @@ export function Settings() {
             </button>
             <button
               onClick={() => setKeyboardLayout('qwerty')}
-              className={`flex-1 px-3 py-2 rounded transition-all ${
+              className={`flex-1 px-3 py-2 rounded-sm transition-all ${
                 keyboardLayout === 'qwerty'
                   ? 'bg-tunic-steel text-white shadow-md'
                   : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
@@ -291,7 +291,7 @@ export function Settings() {
             useStore.getState().showControls();
             closeSettings();
           }}
-          className="w-full bg-tunic-green hover:bg-tunic-dark-green text-white py-2 rounded transition-colors mb-2"
+          className="w-full bg-tunic-green hover:bg-tunic-dark-green text-white py-2 rounded-sm transition-colors mb-2"
           aria-label="Afficher les contrôles"
         >
           📋 {t('settings.showControls')}
@@ -300,7 +300,7 @@ export function Settings() {
         {/* Close button */}
         <button
           onClick={closeSettings}
-          className="w-full bg-tunic-steel hover:bg-tunic-dark-steel text-white py-2 rounded transition-colors"
+          className="w-full bg-tunic-steel hover:bg-tunic-dark-steel text-white py-2 rounded-sm transition-colors"
           aria-label={t('common.close')}
         >
           {t('common.close')}
