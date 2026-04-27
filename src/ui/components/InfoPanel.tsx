@@ -67,7 +67,12 @@ export function InfoPanel() {
         ) : (
           <>
             {closeButton}
-            <img src={panelContent.title} alt={panelContent.title} />
+            <div
+              ref={containerRef}
+              className="relative max-w-4xl w-auto max-h-[90vh] bg-gray-900/95 rounded-lg shadow-2xl overflow-hidden border border-gray-700 m-4 animate-fadeInSlide flex flex-col"
+            >
+              <img src={panelContent.title} alt={panelContent.title} />
+            </div>
           </>
         )
       ) : (

@@ -1,12 +1,12 @@
 import { useGLTF } from '@react-three/drei';
 import { useEffect } from 'react';
-import * as THREE from 'three';
+import { Color, Material, Mesh, Object3D } from 'three';
 
 export type AccessoryType = 'hat-pokemon' | 'hat-crisis' | null;
 
 interface AccessoryProps {
   type: AccessoryType;
-  head?: THREE.Object3D | null;
+  head?: Object3D | null;
 }
 
 /**
@@ -22,7 +22,7 @@ export function Accessory({ type, head }: AccessoryProps) {
   useEffect(() => {
     if (!head || !type) return;
 
-    let gltfScene: THREE.Object3D | null = null;
+    let gltfScene: Object3D | null = null;
     let position: [number, number, number] = [0, 0.1, -0.39];
     let rotation: [number, number, number] = [-2.5, 2.75, 0];
     let scale: [number, number, number] = [1.8, 1.8, 1.8];
@@ -37,15 +37,15 @@ export function Accessory({ type, head }: AccessoryProps) {
 
       // Changer la couleur en rouge bordeaux
       gltfScene.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
+        if (child instanceof Mesh) {
           if (Array.isArray(child.material)) {
             child.material.forEach((mat) => {
-              if (mat instanceof THREE.Material && 'color' in mat) {
-                (mat.color as THREE.Color).set('#800020');
+              if (mat instanceof Material && 'color' in mat) {
+                (mat.color as Color).set('#800020');
               }
             });
-          } else if (child.material instanceof THREE.Material && 'color' in child.material) {
-            (child.material.color as THREE.Color).set('#800020');
+          } else if (child.material instanceof Material && 'color' in child.material) {
+            (child.material.color as Color).set('#800020');
           }
         }
       });

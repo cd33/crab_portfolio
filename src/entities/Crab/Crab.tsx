@@ -6,9 +6,18 @@ import { useGLTF } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { MOVEMENT } from '@utils/constants';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { Group } from 'three';
-import * as THREE from 'three';
-import { AnimationAction, AnimationMixer, Box3, LoopOnce, LoopRepeat, Mesh, Vector3 } from 'three';
+import {
+  AnimationAction,
+  AnimationMixer,
+  Box3,
+  Group,
+  LoopOnce,
+  LoopRepeat,
+  MathUtils,
+  Mesh,
+  Object3D,
+  Vector3,
+} from 'three';
 import { Accessory } from './Accessory';
 import { useDanceAnimation, useIdleDetection, useYawnAnimation } from './CrabAnimations';
 import { CrabController } from './CrabController';
@@ -53,15 +62,15 @@ export function Crab() {
   const isWalkingRef = useRef(false); // Track current walking state
 
   // Références aux pinces pour l'animation au contact du mur
-  const leftClawRef = useRef<THREE.Object3D | null>(null);
-  const rightClawRef = useRef<THREE.Object3D | null>(null);
+  const leftClawRef = useRef<Object3D | null>(null);
+  const rightClawRef = useRef<Object3D | null>(null);
   // Stocke la rotation.x d'origine pour offset
   const leftClawBaseRotX = useRef<number | null>(null);
   const rightClawBaseRotX = useRef<number | null>(null);
 
   // Référence à la tête pour les accessoires
-  const headRef = useRef<THREE.Object3D | null>(null);
-  const [head, setHead] = useState<THREE.Object3D | null>(null);
+  const headRef = useRef<Object3D | null>(null);
+  const [head, setHead] = useState<Object3D | null>(null);
 
   // Initialisation du mixer et des actions blink pour chaque eyelid
   useEffect(() => {
@@ -126,7 +135,7 @@ export function Crab() {
 
     // Activer les ombres sélectivement sur le crabe - le corps projette, le sol reçoit
     scene.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
+      if (child instanceof Mesh) {
         child.castShadow = true;
         child.receiveShadow = false;
       }
@@ -284,9 +293,9 @@ export function Crab() {
       const targetOffset = wallProximity ? -wallProximity * 1.5 : 0;
       // Interpolation fluide de l'offset
       const lerpSpeed = 8.0 * clampedDelta;
-      clawOffsetRef.current = THREE.MathUtils.lerp(clawOffsetRef.current, targetOffset, lerpSpeed);
+      clawOffsetRef.current = MathUtils.lerp(clawOffsetRef.current, targetOffset, lerpSpeed);
       // Clamp l'offset pour éviter l'accumulation
-      clawOffsetRef.current = THREE.MathUtils.clamp(clawOffsetRef.current, -1, 1);
+      clawOffsetRef.current = MathUtils.clamp(clawOffsetRef.current, -1, 1);
       // Applique uniquement l'offset code
       leftClawRef.current.rotation.x = clawOffsetRef.current;
       rightClawRef.current.rotation.x = clawOffsetRef.current;

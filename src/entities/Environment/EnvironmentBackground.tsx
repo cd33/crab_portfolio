@@ -1,7 +1,20 @@
 import { useStore } from '@/store/useStore';
 import { useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
-import * as THREE from 'three';
+import {
+  BufferGeometry,
+  DoubleSide,
+  Euler,
+  ExtrudeGeometry,
+  Float32BufferAttribute,
+  Group,
+  Mesh,
+  MeshStandardMaterial,
+  PlaneGeometry,
+  Quaternion,
+  Shape,
+  Vector3,
+} from 'three';
 
 const isMobile =
   typeof navigator !== 'undefined' &&
@@ -100,7 +113,7 @@ const OCEAN_SEGMENTS = isMobile ? 24 : 48;
 // ============================================
 
 function Ocean({ night }: { night: boolean }) {
-  const geoRef = useRef<THREE.PlaneGeometry>(null);
+  const geoRef = useRef<PlaneGeometry>(null);
   const baseRef = useRef<Float32Array | null>(null);
   const frameCount = useRef(0);
 
@@ -203,9 +216,9 @@ function PalmTree({ data, night }: { data: PalmInfo; night: boolean }) {
   const leanX = Math.sin(data.leanDir) * data.lean;
   const leanZ = Math.cos(data.leanDir) * data.lean;
 
-  const upperTrunkRef = useRef<THREE.Group>(null);
-  const crownRef = useRef<THREE.Group>(null);
-  const frondRefs = useRef<THREE.Group[]>([]);
+  const upperTrunkRef = useRef<Group>(null);
+  const crownRef = useRef<Group>(null);
+  const frondRefs = useRef<Group[]>([]);
   const windPhase = data.position[0] * 0.5 + data.position[2] * 0.3;
   const palmFrameCount = useRef(0);
 
@@ -265,12 +278,12 @@ function PalmTree({ data, night }: { data: PalmInfo; night: boolean }) {
                   >
                     <mesh position={[0, 0.65, 0]}>
                       <boxGeometry args={[0.4, 1.3, 0.02]} />
-                      <meshStandardMaterial color={col} flatShading side={THREE.DoubleSide} />
+                      <meshStandardMaterial color={col} flatShading side={DoubleSide} />
                     </mesh>
                     <group position={[0, 1.3, 0]} rotation={[0.4, 0, 0]}>
                       <mesh position={[0, 0.35, 0]}>
                         <boxGeometry args={[0.22, 0.7, 0.02]} />
-                        <meshStandardMaterial color={col} flatShading side={THREE.DoubleSide} />
+                        <meshStandardMaterial color={col} flatShading side={DoubleSide} />
                       </mesh>
                     </group>
                   </group>
@@ -346,7 +359,7 @@ function DistantIslands({ night }: { night: boolean }) {
                 <group key={j} position={[0, 2.2, 0]} rotation={[0.7, a, 0]}>
                   <mesh position={[0, 0, 0.5]} rotation={[0.4, 0, 0]}>
                     <boxGeometry args={[0.06, 0.015, 1]} />
-                    <meshStandardMaterial color="#228B22" flatShading side={THREE.DoubleSide} />
+                    <meshStandardMaterial color="#228B22" flatShading side={DoubleSide} />
                   </mesh>
                 </group>
               ))}
@@ -363,7 +376,7 @@ function DistantIslands({ night }: { night: boolean }) {
 // ============================================
 
 function Foam({ night }: { night: boolean }) {
-  const ref = useRef<THREE.Group>(null);
+  const ref = useRef<Group>(null);
   const foamFrameCount = useRef(0);
 
   useFrame(({ clock }) => {
@@ -376,8 +389,7 @@ function Foam({ night }: { night: boolean }) {
     ref.current.children.forEach((mesh, i) => {
       const phase = (i / 3) * Math.PI * 2;
       const wave = Math.sin(t * 0.5 + phase) * 0.5 + 0.5;
-      ((mesh as THREE.Mesh).material as THREE.MeshStandardMaterial).opacity =
-        wave * (night ? 0.12 : 0.45);
+      ((mesh as Mesh).material as MeshStandardMaterial).opacity = wave * (night ? 0.12 : 0.45);
     });
   });
 
@@ -405,22 +417,22 @@ function Foam({ night }: { night: boolean }) {
 // ============================================
 
 function Sailboat({ night }: { night: boolean }) {
-  const ref = useRef<THREE.Group>(null);
-  const flagRef = useRef<THREE.Mesh>(null);
-  const mainSailRef = useRef<THREE.Mesh>(null);
-  const jibSailRef = useRef<THREE.Mesh>(null);
+  const ref = useRef<Group>(null);
+  const flagRef = useRef<Mesh>(null);
+  const mainSailRef = useRef<Mesh>(null);
+  const jibSailRef = useRef<Mesh>(null);
   const boatFrameCount = useRef(0);
 
   // Custom hull – smaller bevel for clean shape
   const hullGeo = useMemo(() => {
-    const shape = new THREE.Shape();
+    const shape = new Shape();
     shape.moveTo(-0.35, 0.3);
     shape.lineTo(-0.38, 0.1);
     shape.quadraticCurveTo(-0.32, -0.15, 0, -0.2);
     shape.quadraticCurveTo(0.32, -0.15, 0.38, 0.1);
     shape.lineTo(0.35, 0.3);
     shape.lineTo(-0.35, 0.3);
-    const geo = new THREE.ExtrudeGeometry(shape, {
+    const geo = new ExtrudeGeometry(shape, {
       steps: 5,
       depth: 3.6,
       bevelEnabled: true,
@@ -435,7 +447,7 @@ function Sailboat({ night }: { night: boolean }) {
 
   // Main sail – curved plane (wind belly)
   const mainSailGeo = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(1.6, 2.8, 8, 12);
+    const geo = new PlaneGeometry(1.6, 2.8, 8, 12);
     const pos = geo.attributes.position.array as Float32Array;
     for (let i = 0; i < pos.length; i += 3) {
       const u = (pos[i] + 0.8) / 1.6;
@@ -448,7 +460,7 @@ function Sailboat({ night }: { night: boolean }) {
 
   // Jib sail – triangular curved shape
   const jibSailGeo = useMemo(() => {
-    const geo = new THREE.BufferGeometry();
+    const geo = new BufferGeometry();
     const segsU = 6;
     const segsV = 10;
     const vertices: number[] = [];
@@ -474,7 +486,7 @@ function Sailboat({ night }: { night: boolean }) {
         indices.push(b, c, d);
       }
     }
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geo.setAttribute('position', new Float32BufferAttribute(vertices, 3));
     geo.setIndex(indices);
     geo.computeVertexNormals();
     return geo;
@@ -482,7 +494,7 @@ function Sailboat({ night }: { night: boolean }) {
 
   // Flag geometry
   const flagGeo = useMemo(() => {
-    return new THREE.PlaneGeometry(0.5, 0.25, 8, 2);
+    return new PlaneGeometry(0.5, 0.25, 8, 2);
   }, []);
 
   // Rigging line helper – compute position/rotation/length from two 3D points
@@ -499,10 +511,10 @@ function Sailboat({ night }: { night: boolean }) {
     const midY = (from[1] + to[1]) / 2;
     const midZ = (from[2] + to[2]) / 2;
     // Cylinder is along Y by default; we need to orient it from->to
-    const dir = new THREE.Vector3(dx, dy, dz).normalize();
-    const up = new THREE.Vector3(0, 1, 0);
-    const quat = new THREE.Quaternion().setFromUnitVectors(up, dir);
-    const euler = new THREE.Euler().setFromQuaternion(quat);
+    const dir = new Vector3(dx, dy, dz).normalize();
+    const up = new Vector3(0, 1, 0);
+    const quat = new Quaternion().setFromUnitVectors(up, dir);
+    const euler = new Euler().setFromQuaternion(quat);
     return { position: [midX, midY, midZ] as const, rotation: euler, length, radius };
   };
 
@@ -592,7 +604,7 @@ function Sailboat({ night }: { night: boolean }) {
       {/* === DECK === */}
       <mesh position={[0, 0.32, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[3.4, 0.6]} />
-        <meshStandardMaterial color={deckCol} roughness={0.9} side={THREE.DoubleSide} />
+        <meshStandardMaterial color={deckCol} roughness={0.9} side={DoubleSide} />
       </mesh>
 
       {/* Deck planking lines */}
@@ -686,7 +698,7 @@ function Sailboat({ night }: { night: boolean }) {
         <meshStandardMaterial
           color={sailCol}
           flatShading
-          side={THREE.DoubleSide}
+          side={DoubleSide}
           transparent
           opacity={0.92}
         />
@@ -722,7 +734,7 @@ function Sailboat({ night }: { night: boolean }) {
         <meshStandardMaterial
           color={sailCol}
           flatShading
-          side={THREE.DoubleSide}
+          side={DoubleSide}
           transparent
           opacity={0.88}
         />
@@ -742,7 +754,7 @@ function Sailboat({ night }: { night: boolean }) {
 
       {/* === FLAG at masthead === */}
       <mesh ref={flagRef} geometry={flagGeo} position={[0.45, 4.35, 0]}>
-        <meshStandardMaterial color={flagCol} side={THREE.DoubleSide} />
+        <meshStandardMaterial color={flagCol} side={DoubleSide} />
       </mesh>
 
       {/* === RAILING POSTS === */}
@@ -845,7 +857,7 @@ function BeachUmbrella({ night }: { night: boolean }) {
       {/* Canopy - octagonal cone */}
       <mesh position={[0, 2.9, 0]} rotation={[0, 0, 0]}>
         <coneGeometry args={[1.8, 0.6, 8]} />
-        <meshStandardMaterial color={canopyCol} flatShading side={THREE.DoubleSide} />
+        <meshStandardMaterial color={canopyCol} flatShading side={DoubleSide} />
       </mesh>
       {/* Canopy stripe ring */}
       <mesh position={[0, 2.75, 0]}>
@@ -857,7 +869,7 @@ function BeachUmbrella({ night }: { night: boolean }) {
         <planeGeometry args={[2, 1.2]} />
         <meshStandardMaterial
           color={night ? '#1a1a2a' : '#4FC3F7'}
-          side={THREE.DoubleSide}
+          side={DoubleSide}
           roughness={0.95}
         />
       </mesh>

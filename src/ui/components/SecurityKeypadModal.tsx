@@ -137,6 +137,7 @@ export function SecurityKeypadModal() {
               key={digit}
               onClick={() => (digit === 'C' ? handleClear() : handleKeyPress(digit))}
               disabled={isSuccess}
+              aria-label={digit === 'C' ? 'Clear' : digit === '*' ? 'Asterisk' : `Digit ${digit}`}
               className={`${
                 digit === 'C'
                   ? 'bg-gradient-to-br from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-600 active:from-orange-800 active:to-orange-900'

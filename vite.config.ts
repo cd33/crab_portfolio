@@ -88,9 +88,21 @@ export default defineConfig({
             return 'ui-vendor';
           }
 
-          // Split large components
-          if (id.includes('src/entities')) {
-            return 'entities';
+          // Split large entity components in separate chunks
+          if (id.includes('src/entities/Environment/EnvironmentBackground')) {
+            return 'entities-env';
+          }
+          if (id.includes('src/entities/Environment/WorkspaceScene')) {
+            return 'entities-workspace';
+          }
+          if (
+            id.includes('src/entities/Crab/Crab') ||
+            id.includes('src/entities/Crab/Accessory') ||
+            id.includes('src/entities/Crab/CrabAnimations') ||
+            id.includes('src/entities/Crab/CrabController') ||
+            id.includes('src/entities/InteractableObjects')
+          ) {
+            return 'entities-crab';
           }
         },
 

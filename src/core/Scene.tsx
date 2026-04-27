@@ -1,13 +1,20 @@
-import { Crab } from '@/entities/Crab/Crab';
-import { EnvironmentBackground } from '@/entities/Environment/EnvironmentBackground';
-import { WorkspaceScene } from '@/entities/Environment/WorkspaceScene';
 import { AdaptiveDpr, Stats } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { performanceMonitor } from '@utils/performance';
-import { Suspense, useEffect, useState } from 'react';
-import * as THREE from 'three';
+import { Suspense, lazy, useEffect, useState } from 'react';
+import { PCFSoftShadowMap } from 'three';
 import { Camera } from './Camera';
 import { Lights } from './Lights';
+
+const EnvironmentBackground = lazy(() =>
+  import('@/entities/Environment/EnvironmentBackground').then((m) => ({
+    default: m.EnvironmentBackground,
+  }))
+);
+const WorkspaceScene = lazy(() =>
+  import('@/entities/Environment/WorkspaceScene').then((m) => ({ default: m.WorkspaceScene }))
+);
+const Crab = lazy(() => import('@/entities/Crab/Crab').then((m) => ({ default: m.Crab })));
 
 interface SceneProps {
   /** Show performance stats in development mode */
@@ -42,7 +49,9 @@ export function Scene({ showStats = import.meta.env.DEV }: SceneProps) {
 
   return (
     <Canvas
-      shadows={quality.shadows ? { type: THREE.PCFSoftShadowMap } : false}
+      aria-label="Interactive 3D scene - use WASD to move the crab"
+      role="application"
+      shadows={quality.shadows ? { type: PCFSoftShadowMap } : false}
       camera={{ position: [0, 6, 8], fov: 50 }}
       gl={{
         alpha: false,

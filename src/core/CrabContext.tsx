@@ -16,13 +16,16 @@ interface CrabProviderProps {
  * inside useFrame without causing React re-renders.
  */
 export function CrabProvider({ children, joystickMovement }: CrabProviderProps) {
-  const positionRef = useRef(new Vector3(0, 0, 0));
+  const position = useMemo(() => new Vector3(0, 0, 0), []);
   const rotationRef = useRef(0);
   const animationStateRef = useRef<'idle' | 'walking'>('idle');
 
-  const updatePosition = useCallback((newPosition: Vector3) => {
-    positionRef.current.copy(newPosition);
-  }, []);
+  const updatePosition = useCallback(
+    (newPosition: Vector3) => {
+      position.copy(newPosition);
+    },
+    [position]
+  );
 
   const updateRotation = useCallback((newRotation: number) => {
     rotationRef.current = newRotation;
@@ -33,11 +36,11 @@ export function CrabProvider({ children, joystickMovement }: CrabProviderProps) 
   }, []);
 
   // Stable context value - never triggers re-renders of consumers.
-  // position is a mutable Vector3 ref read imperatively in useFrame.
-  // rotation / animationState use getters to always return latest value.
+  // `position` is the same Vector3 object for the lifetime of this provider.
+  // rotation / animationState use getters to always return the latest value.
   const value = useMemo<CrabContextType>(
     () => ({
-      position: positionRef.current,
+      position,
       get rotation() {
         return rotationRef.current;
       },
@@ -49,7 +52,7 @@ export function CrabProvider({ children, joystickMovement }: CrabProviderProps) 
       updateAnimationState,
       joystickMovement,
     }),
-    [joystickMovement, updatePosition, updateRotation, updateAnimationState]
+    [position, joystickMovement, updatePosition, updateRotation, updateAnimationState]
   );
 
   return <CrabContext.Provider value={value}>{children}</CrabContext.Provider>;

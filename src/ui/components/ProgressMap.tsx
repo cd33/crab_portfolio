@@ -66,10 +66,11 @@ export function ProgressMap() {
     >
       <div
         ref={containerRef}
-        className="relative w-full max-w-2xl rounded-lg bg-tunic-beige p-6 shadow-2xl animate-fadeInSlide"
+        className="relative w-full max-w-2xl rounded-lg bg-tunic-beige p-4 sm:p-6 shadow-2xl animate-fadeInSlide max-h-[100dvh] overflow-y-auto"
+        style={{ overscrollBehavior: 'contain' }}
       >
         {/* Header */}
-        <div className="mb-6 flex items-center justify-between border-b border-tunic-steel/20 pb-4">
+        <div className="mb-6 flex items-center justify-between border-b border-tunic-steel/20 pb-4 sticky top-0 z-10 bg-tunic-beige/95 backdrop-blur-xs">
           <div className="flex items-center gap-3">
             <MapIcon className="h-6 w-6 text-tunic-steel" />
             <h2 id="progress-map-title" className="text-2xl font-bold text-tunic-steel">
@@ -105,13 +106,13 @@ export function ProgressMap() {
         </div>
 
         {/* Objects Grid */}
-        <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <div className="mb-6 grid grid-cols-1 gap-3 xs:grid-cols-2 sm:grid-cols-3">
           {allObjects.map((obj) => {
             const discovered = isDiscovered(obj.id);
             return (
               <div
                 key={obj.id}
-                className={`flex flex-col items-center gap-2 rounded-lg border-2 p-4 transition-all ${
+                className={`flex flex-col items-center gap-2 rounded-lg border-2 p-3 sm:p-4 transition-all ${
                   discovered
                     ? 'border-tunic-green bg-tunic-green/10'
                     : 'border-tunic-steel/30 bg-tunic-steel/5'

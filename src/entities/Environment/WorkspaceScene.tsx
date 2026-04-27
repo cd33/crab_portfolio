@@ -8,7 +8,7 @@ import { useGLTF } from '@react-three/drei';
 import type { ThreeElements } from '@react-three/fiber';
 import { useFrame } from '@react-three/fiber';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import * as THREE from 'three';
+import { Mesh, MeshStandardMaterial, Vector3 } from 'three';
 
 // Centralisation des groupes interactifs
 const INTERACTIVE_GROUPS = [
@@ -65,7 +65,7 @@ const INTERACTIVE_NAMES = [
   'LaptopScreen',
   'Mug',
   'MugHandle',
-  'Plant',
+  // 'Plant',
   'FloorLampBase',
   'FloorLampLight',
   'FloorLampPole',
@@ -151,9 +151,9 @@ export function WorkspaceScene(props: ThreeElements['group']) {
 
   const interactiveMeshes = useMemo(() => {
     if (!scene) return [];
-    const meshes: THREE.Mesh[] = [];
+    const meshes: Mesh[] = [];
     scene.traverse((child) => {
-      if (child instanceof THREE.Mesh && INTERACTIVE_NAMES.includes(child.name)) {
+      if (child instanceof Mesh && INTERACTIVE_NAMES.includes(child.name)) {
         if (child.name === 'Door' || child.name === 'DoorHandle') {
           if (isDoorUnlocked) {
             meshes.push(child);
@@ -168,7 +168,7 @@ export function WorkspaceScene(props: ThreeElements['group']) {
 
   // Utilitaire pour grouper les meshes
   const groupedMeshes = useMemo(() => {
-    const groups: Record<string, THREE.Mesh[]> = {};
+    const groups: Record<string, Mesh[]> = {};
     INTERACTIVE_GROUPS.forEach((g) => {
       groups[g.key] = interactiveMeshes.filter((m) => g.names.includes(m.name));
     });
@@ -180,7 +180,7 @@ export function WorkspaceScene(props: ThreeElements['group']) {
   }, [interactiveMeshes]);
 
   // Pre-allocated Vector3 for proximity checks - avoids GC in frame loop
-  const _worldPos = useMemo(() => new THREE.Vector3(), []);
+  const _worldPos = useMemo(() => new Vector3(), []);
 
   // Trouve le groupe le plus proche et la distance (reads crab position imperatively)
   const getClosestGroup = useCallback(() => {
@@ -285,7 +285,7 @@ export function WorkspaceScene(props: ThreeElements['group']) {
   useEffect(() => {
     if (!scene) return;
     scene.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
+      if (child instanceof Mesh) {
         child.castShadow = SHADOW_CASTERS.has(child.name);
         child.receiveShadow =
           SHADOW_RECEIVERS.has(child.name) ||
@@ -313,7 +313,7 @@ export function WorkspaceScene(props: ThreeElements['group']) {
       // Apply emissive highlight imperatively
       interactiveMeshes.forEach((mesh) => {
         const mat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
-        if (mat && mat instanceof THREE.MeshStandardMaterial) {
+        if (mat && mat instanceof MeshStandardMaterial) {
           mat.emissive.set(0x000000);
           mat.emissiveIntensity = 0;
         }
@@ -321,7 +321,7 @@ export function WorkspaceScene(props: ThreeElements['group']) {
       if (next && groupedMeshes[next]) {
         groupedMeshes[next].forEach((mesh) => {
           const mat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
-          if (mat && mat instanceof THREE.MeshStandardMaterial) {
+          if (mat && mat instanceof MeshStandardMaterial) {
             mat.emissive.set(0x9575cd);
             mat.emissiveIntensity = 2.4;
           }

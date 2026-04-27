@@ -1,6 +1,6 @@
 import { useTexture } from '@react-three/drei';
 import { useRef } from 'react';
-import * as THREE from 'three';
+import { Mesh } from 'three';
 
 interface PosterProps {
   img?: string;
@@ -20,7 +20,7 @@ export function Poster({
   onClick,
   isHighlighted = false,
 }: PosterProps) {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const meshRef = useRef<Mesh>(null);
   const imageTexturePath = img ?? '/image692.jpg';
   const texture = useTexture(imageTexturePath);
 

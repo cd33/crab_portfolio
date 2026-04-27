@@ -14,8 +14,10 @@ export function useBootSequence(
   useEffect(() => {
     if (!isOpen) return;
 
-    setIsBooting(true);
-    setBootLines([]);
+    const resetId = setTimeout(() => {
+      setIsBooting(true);
+      setBootLines([]);
+    }, 0);
 
     const bootSequence = [
       t('terminal.bootSequence.systemBoot'),
@@ -44,7 +46,10 @@ export function useBootSequence(
       }
     }, 100);
 
-    return () => clearInterval(bootInterval);
+    return () => {
+      clearTimeout(resetId);
+      clearInterval(bootInterval);
+    };
   }, [isOpen, t]);
 
   return { isBooting, bootLines };

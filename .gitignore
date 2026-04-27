@@ -33,3 +33,4 @@ docs/
 specs/
 playwright-report/
 coverage/
+test-results/

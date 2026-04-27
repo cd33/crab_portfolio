@@ -129,10 +129,30 @@ export const INTERACTIVES_OBJECTS = [
   // { id: 'plant-1', name: 'Plante', icon: '🌿', type: 'about' },
 ];
 
-export const PASSWORDS = [
-  'cr4b_m4st3r_2025',
-  'm4st3rp13c3',
-  'k33p_sm1l1ng',
-  'k0n4m1_c0d3',
-  '50_m374',
-];
+export const PASSWORD_HASHES = [
+  '5b34d927b251c12992dca0ccf2a41ba97d1618730f0421dd2268784f29d5ce0c',
+  'f51b3fe579785acdf5e830d257619c2e06af735275b690ac00e813a167ec4fc2',
+  '797fba4e523f39e28bc4469ad6353509bd6dec30fa1c93ab5e02444ea4d38da1',
+  '6b0ceb02aaa765e0f36bf10a4315d4365ebf12e57f2804daadb3338d048bc7d9',
+  '31ff564ed20c422f96bc35b3f60b4a86c7ddebff58dcb7d1b6f4355e98419c8e',
+] as const;
+export const PASSWORDS_COUNT = PASSWORD_HASHES.length;
+
+/**
+ * Hashes a string with SHA-256 using the Web Crypto API.
+ * Returns a hex-encoded digest.
+ */
+export async function sha256(message: string): Promise<string> {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Verifies a user-supplied password against a stored SHA-256 hash.
+ */
+export async function verifyPassword(input: string, hash: string): Promise<boolean> {
+  const inputHash = await sha256(input);
+  return inputHash === hash;
+}

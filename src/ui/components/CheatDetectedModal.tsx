@@ -40,14 +40,23 @@ export function CheatDetectedModal({ isOpen }: { isOpen: boolean }) {
   };
 
   return (
-    <div className="cheat-detected-overlay">
+    <div
+      className="cheat-detected-overlay"
+      role="alertdialog"
+      aria-modal="true"
+      aria-live="assertive"
+      aria-labelledby="cheat-modal-title"
+      aria-describedby="cheat-modal-desc"
+    >
       <div className="cheat-detected-modal">
         <div className="cheat-detected-header">
           <div className="cheat-detected-icon">🚨</div>
-          <h1 className="cheat-detected-title">{t('cheatDetected.title')}</h1>
+          <h1 id="cheat-modal-title" className="cheat-detected-title">
+            {t('cheatDetected.title')}
+          </h1>
         </div>
 
-        <div className="cheat-detected-content">
+        <div id="cheat-modal-desc" className="cheat-detected-content">
           <div className="cheat-detected-crab">
             <div className="sad-crab">🦀</div>
             <div className="broken-vacation">🏖️❌</div>

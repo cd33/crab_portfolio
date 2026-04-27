@@ -1,7 +1,7 @@
 import { useI18n } from '@/hooks/useI18n';
 import { useSound } from '@/hooks/useSound';
 import { useStore } from '@/store/useStore';
-import { PASSWORDS } from '@/utils/constants';
+import { PASSWORD_HASHES, PASSWORDS_COUNT, verifyPassword } from '@/utils/constants';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { formatTableLine } from './terminal/formatTableLine';
 import { TERMINAL_THEMES } from './terminal/terminalThemes';
@@ -91,11 +91,15 @@ export function RetroTerminal() {
   // Initialize terminal lines after boot
   useEffect(() => {
     if (!isBooting && isTerminalOpen) {
-      setLines([
-        { id: 0, text: t('terminal.bootSequence.version'), type: 'output' },
-        { id: 1, text: t('terminal.bootSequence.helpPrompt'), type: 'output' },
-        { id: 2, text: '', type: 'output' },
-      ]);
+      // Deferred to avoid synchronous setState inside an effect body (react-hooks/set-state-in-effect)
+      const id = setTimeout(() => {
+        setLines([
+          { id: 0, text: t('terminal.bootSequence.version'), type: 'output' },
+          { id: 1, text: t('terminal.bootSequence.helpPrompt'), type: 'output' },
+          { id: 2, text: '', type: 'output' },
+        ]);
+      }, 0);
+      return () => clearTimeout(id);
     }
   }, [isBooting, isTerminalOpen, t]);
 
@@ -348,7 +352,7 @@ export function RetroTerminal() {
           addLine(t('terminal.logs.log3'), 'output');
           addLine('', 'output');
         }
-        if (doorCount >= PASSWORDS.length) {
+        if (doorCount >= PASSWORDS_COUNT) {
           addLine(`[LOG] - ${new Date().toLocaleDateString()}`, 'output');
           addLine(t('terminal.logs.log4'), 'output');
           addLine('', 'output');
@@ -551,7 +555,7 @@ export function RetroTerminal() {
       }
 
       case 'door': {
-        if (doorCount >= PASSWORDS.length) {
+        if (doorCount >= PASSWORDS_COUNT) {
           addLine(t('terminal.door.statusComplete'), 'output');
           addLine(t('terminal.door.alreadyUnlocked'), 'output');
           break;
@@ -562,53 +566,56 @@ export function RetroTerminal() {
             addLine(t('terminal.door.statusLocked'), 'output');
           } else {
             addLine(
-              t('terminal.door.statusPartial', { stage: doorCount, total: PASSWORDS.length }),
+              t('terminal.door.statusPartial', { stage: doorCount, total: PASSWORDS_COUNT }),
               'output'
             );
           }
           addLine(t('terminal.door.enterPassword'), 'output');
         } else {
           const input = parts[1];
-          if (input === PASSWORDS[doorCount]) {
-            incrementDoorCount();
-            incrementMailCount();
-            if (mailCount === 2) {
+          (async () => {
+            const isCorrect = await verifyPassword(input, PASSWORD_HASHES[doorCount]);
+            if (isCorrect) {
+              incrementDoorCount();
               incrementMailCount();
-            } else if (doorCount === 4) {
-              logSound.play();
-            }
-            addLine(t('terminal.door.newMailNotification'), 'output');
-            addLine(
-              t('terminal.door.stageComplete', {
-                stage: doorCount + 1,
-                total: PASSWORDS.length,
-              }),
-              'output'
-            );
-            if (doorCount + 1 < PASSWORDS.length) {
-              addLine(t('terminal.door.awaitingNext'), 'output');
-              addLine(t('terminal.door.enterPassword'), 'output');
-              if (doorCount === 3) {
-                console.log('Presque, mais pas tout à fait...');
-                localStorage.setItem('crab_context', PASSWORDS[4]);
+              if (mailCount === 2) {
+                incrementMailCount();
+              } else if (doorCount === 4) {
+                logSound.play();
+              }
+              addLine(t('terminal.door.newMailNotification'), 'output');
+              addLine(
+                t('terminal.door.stageComplete', {
+                  stage: doorCount + 1,
+                  total: PASSWORDS_COUNT,
+                }),
+                'output'
+              );
+              if (doorCount + 1 < PASSWORDS_COUNT) {
+                addLine(t('terminal.door.awaitingNext'), 'output');
+                addLine(t('terminal.door.enterPassword'), 'output');
+                if (doorCount === 3) {
+                  console.log('Presque, mais pas tout à fait...');
+                  localStorage.setItem('crab_context', '50_m374');
+                }
+              } else {
+                addLine(t('terminal.door.statusComplete'), 'output');
+                addLine(t('terminal.door.unlocked'), 'output');
               }
             } else {
-              addLine(t('terminal.door.statusComplete'), 'output');
-              addLine(t('terminal.door.unlocked'), 'output');
+              addLine(t('terminal.door.incorrectPassword'), 'error');
+              addLine(
+                doorCount === 0
+                  ? t('terminal.door.statusLocked')
+                  : t('terminal.door.statusPartial', {
+                      stage: doorCount,
+                      total: PASSWORDS_COUNT,
+                    }),
+                'output'
+              );
+              addLine(t('terminal.door.tryAgain'), 'output');
             }
-          } else {
-            addLine(t('terminal.door.incorrectPassword'), 'error');
-            addLine(
-              doorCount === 0
-                ? t('terminal.door.statusLocked')
-                : t('terminal.door.statusPartial', {
-                    stage: doorCount,
-                    total: PASSWORDS.length,
-                  }),
-              'output'
-            );
-            addLine(t('terminal.door.tryAgain'), 'output');
-          }
+          })();
         }
         break;
       }
@@ -965,6 +972,7 @@ export function RetroTerminal() {
                         ref={inputRef}
                         type={awaitingPassword ? 'password' : 'text'}
                         value={currentInput}
+                        aria-label="Terminal command input"
                         onChange={(e) => {
                           setCurrentInput(e.target.value);
                           setCaretPos(e.target.selectionStart ?? 0);
