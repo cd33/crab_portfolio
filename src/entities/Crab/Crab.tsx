@@ -19,7 +19,12 @@ import {
   Vector3,
 } from 'three';
 import { Accessory } from './Accessory';
-import { useDanceAnimation, useIdleDetection, useYawnAnimation } from './CrabAnimations';
+import {
+  useDanceAnimation,
+  useGreetingAnimation,
+  useIdleDetection,
+  useYawnAnimation,
+} from './CrabAnimations';
 import { CrabController } from './CrabController';
 
 /**
@@ -47,8 +52,11 @@ export function Crab() {
 
   // Animation states
   const [shouldYawn, setShouldYawn] = useState(false);
+  const [shouldGreet, setShouldGreet] = useState(false);
   const hasYawnedRef = useRef(false);
-  const hasDancedRef = useRef(false);
+  const lastDancedAtCountRef = useRef(mugClickCount);
+  const isDancingRef = useRef(false);
+  const hasGreetedRef = useRef(false);
   // Offset animé pour la levée des pinces (pour la fluidité)
   const clawOffsetRef = useRef(0);
 
@@ -247,14 +255,20 @@ export function Crab() {
   // Trigger dance when mug is clicked multiples of 3 times
   const shouldDance = useMemo(() => mugClickCount > 0 && mugClickCount % 3 === 0, [mugClickCount]);
 
-  // Reset dance state when mug click count changes
+  // Trigger greeting bow once, after the model has had time to load
   useEffect(() => {
-    hasDancedRef.current = false;
-  }, [mugClickCount]);
+    if (hasGreetedRef.current) return;
+    const timer = setTimeout(() => {
+      setShouldGreet(true);
+      hasGreetedRef.current = true;
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Animation hooks
-  const playDance = useDanceAnimation(groupRef, shouldDance, 3.0);
+  const playDance = useDanceAnimation(groupRef, isDancingRef, 3.0);
   const playYawn = useYawnAnimation(groupRef, shouldYawn, 1.5);
+  const playGreeting = useGreetingAnimation(groupRef, shouldGreet, 1.5);
   const isIdle = useIdleDetection(lastActivityTime, 60);
 
   // Footstep sound
@@ -301,37 +315,44 @@ export function Crab() {
       rightClawRef.current.rotation.x = clawOffsetRef.current;
     }
 
-    // ✨ ANIMATION DE MARCHE - Transition fluide
+    // ✨ ANIMATION DE MARCHE - Transition fluide via lerp de timeScale
     if (walkActionRef.current) {
       const shouldWalk = crabState.animationState === 'walk';
+      const targetTimeScale = shouldWalk ? 1.2 : 0;
 
-      // Fixe timeScale pour éviter les sauts dus à la transition
-      walkActionRef.current.timeScale = shouldWalk ? 1.2 : 0;
+      // Lerp progressif : accélération/décélération fluide plutôt qu'un switch brutal
+      walkActionRef.current.timeScale = MathUtils.lerp(
+        walkActionRef.current.timeScale,
+        targetTimeScale,
+        Math.min(1, 10 * clampedDelta)
+      );
 
-      // S'assure que l'animation est toujours en lecture
       if (!walkActionRef.current.isRunning()) {
         walkActionRef.current.play();
       }
 
-      // Track l'état pour éviter les appels répétés
       isWalkingRef.current = shouldWalk;
     }
 
     // Update group position
     if (groupRef.current) {
-      groupRef.current.position.copy(crabState.position);
+      // Always sync world XZ from controller; Y is owned by dance when active.
+      groupRef.current.position.x = crabState.position.x;
+      groupRef.current.position.z = crabState.position.z;
+      if (!isDancingRef.current) {
+        groupRef.current.position.y = crabState.position.y;
+      }
 
-      // Interpolation fluide de la rotation Y
-      const currentY = groupRef.current.rotation.y;
-      const targetY = crabState.rotation.y;
-
-      // Lerp angle (gère wrap-around)
-      let deltaY = targetY - currentY;
-      while (deltaY > Math.PI) deltaY -= Math.PI * 2;
-      while (deltaY < -Math.PI) deltaY += Math.PI * 2;
-
-      const rotationLerpSpeed = Math.min(1, MOVEMENT.ROTATION_SPEED * clampedDelta);
-      groupRef.current.rotation.y = currentY + deltaY * rotationLerpSpeed;
+      // Rotation lerp only when not dancing (dance owns rotation.y during spin).
+      if (!isDancingRef.current) {
+        const currentY = groupRef.current.rotation.y;
+        const targetY = crabState.rotation.y;
+        let deltaY = targetY - currentY;
+        while (deltaY > Math.PI) deltaY -= Math.PI * 2;
+        while (deltaY < -Math.PI) deltaY += Math.PI * 2;
+        const rotationLerpSpeed = Math.min(1, MOVEMENT.ROTATION_SPEED * clampedDelta);
+        groupRef.current.rotation.y = currentY + deltaY * rotationLerpSpeed;
+      }
     }
 
     // Update context for other components
@@ -347,11 +368,18 @@ export function Crab() {
       updateActivity();
     }
 
+    // Greeting bow on first load
+    if (shouldGreet) {
+      const greetComplete = playGreeting(clampedDelta);
+      if (greetComplete) setShouldGreet(false);
+    }
+
     // Play dance animation when triggered by mug clicks
-    if (shouldDance && !hasDancedRef.current) {
+    const isDanceNew = shouldDance && mugClickCount > lastDancedAtCountRef.current;
+    if (isDanceNew || isDancingRef.current) {
       const danceComplete = playDance(clampedDelta);
       if (danceComplete) {
-        hasDancedRef.current = true;
+        lastDancedAtCountRef.current = mugClickCount;
       }
     }
 

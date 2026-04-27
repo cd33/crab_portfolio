@@ -75,7 +75,7 @@ export const CAMERA = {
   DISTANCE: isMobile ? 12 : 10,
 
   /** Camera height above ground */
-  HEIGHT: isMobile ? 8 : 7,
+  HEIGHT: isMobile ? 7 : 6,
 
   /** Camera look-at height offset */
   LOOK_AT_HEIGHT: 1,

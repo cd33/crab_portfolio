@@ -423,7 +423,7 @@ function Sailboat({ night }: { night: boolean }) {
   const jibSailRef = useRef<Mesh>(null);
   const boatFrameCount = useRef(0);
 
-  // Custom hull – smaller bevel for clean shape
+  // Custom hull - smaller bevel for clean shape
   const hullGeo = useMemo(() => {
     const shape = new Shape();
     shape.moveTo(-0.35, 0.3);
@@ -445,7 +445,7 @@ function Sailboat({ night }: { night: boolean }) {
     return geo;
   }, []);
 
-  // Main sail – curved plane (wind belly)
+  // Main sail - curved plane (wind belly)
   const mainSailGeo = useMemo(() => {
     const geo = new PlaneGeometry(1.6, 2.8, 8, 12);
     const pos = geo.attributes.position.array as Float32Array;
@@ -458,7 +458,7 @@ function Sailboat({ night }: { night: boolean }) {
     return geo;
   }, []);
 
-  // Jib sail – triangular curved shape
+  // Jib sail - triangular curved shape
   const jibSailGeo = useMemo(() => {
     const geo = new BufferGeometry();
     const segsU = 6;
@@ -497,7 +497,7 @@ function Sailboat({ night }: { night: boolean }) {
     return new PlaneGeometry(0.5, 0.25, 8, 2);
   }, []);
 
-  // Rigging line helper – compute position/rotation/length from two 3D points
+  // Rigging line helper - compute position/rotation/length from two 3D points
   const riggingLine = (
     from: [number, number, number],
     to: [number, number, number],
@@ -530,7 +530,7 @@ function Sailboat({ night }: { night: boolean }) {
     // Sur mobile, on throttle les animations secondaires du bateau
     if (isMobile && boatFrameCount.current % 3 !== 0) return;
 
-    // Ocean rocking – reduced heave so it doesn't float above water
+    // Ocean rocking - reduced heave so it doesn't float above water
     ref.current.position.y = -0.3 + Math.sin(t * 0.6) * 0.08 + Math.sin(t * 1.1) * 0.03;
     ref.current.rotation.z = Math.sin(t * 0.4) * 0.03 + Math.sin(t * 0.9) * 0.01;
     ref.current.rotation.x = Math.sin(t * 0.5 + 0.5) * 0.015;
@@ -567,7 +567,7 @@ function Sailboat({ night }: { night: boolean }) {
   const riggingCol = night ? '#1a1a18' : '#3A3020';
   const wakeOpacity = night ? 0.06 : 0.25;
 
-  // Rigging geometry – from/to points
+  // Rigging geometry - from/to points
   const mastTop: [number, number, number] = [0.2, 4.2, 0];
   const mastSpread: [number, number, number] = [0.2, 2.8, 0];
   const hullPortAft: [number, number, number] = [-0.8, 0.3, 0.35];
@@ -626,7 +626,7 @@ function Sailboat({ night }: { night: boolean }) {
           <boxGeometry args={[0.85, 0.04, 0.44]} />
           <meshStandardMaterial color={cabinRoof} flatShading roughness={0.7} />
         </mesh>
-        {/* Windows – port & starboard */}
+        {/* Windows - port & starboard */}
         {[-0.2, 0.1].map((x, i) => (
           <group key={`w${i}`}>
             <mesh position={[x, 0.16, 0.205]}>
@@ -688,7 +688,7 @@ function Sailboat({ night }: { night: boolean }) {
         <meshStandardMaterial color={mastCol} flatShading />
       </mesh>
 
-      {/* === MAIN SAIL – curved === */}
+      {/* === MAIN SAIL - curved === */}
       <mesh
         ref={mainSailRef}
         geometry={mainSailGeo}
@@ -740,7 +740,7 @@ function Sailboat({ night }: { night: boolean }) {
         />
       </mesh>
 
-      {/* === RIGGING – properly computed from point-to-point === */}
+      {/* === RIGGING - properly computed from point-to-point === */}
       {[shroud1, shroud2, shroud3, shroud4, forestay].map((line, i) => (
         <mesh
           key={`rig${i}`}

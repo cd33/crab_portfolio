@@ -10,46 +10,55 @@ import type { Group } from 'three';
  */
 
 /**
- * Dance animation - Rotate and bob up/down
+ * Dance animation - Spin and bob up/down with a smooth fade-out.
+ *
+ * @param isDancingRef - Ref shared with Crab.tsx; set to true while the
+ *   animation is running so the normal rotation-lerp is disabled.
  */
 export function useDanceAnimation(
   groupRef: React.RefObject<Group | null>,
-  shouldDance: boolean,
+  isDancingRef: React.MutableRefObject<boolean>,
   duration: number = 2.0
 ) {
   const danceTimeRef = useRef(0);
-  const originalYRef = useRef(0);
+  const groundYRef = useRef(0);
 
   return (delta: number) => {
-    if (!shouldDance || !groupRef.current) {
+    if (!groupRef.current) {
       danceTimeRef.current = 0;
-      return false; // Animation not playing
+      isDancingRef.current = false;
+      return false;
+    }
+
+    // First frame: capture the controller's ground Y and mark as dancing.
+    if (danceTimeRef.current === 0) {
+      groundYRef.current = groupRef.current.position.y;
+      isDancingRef.current = true;
     }
 
     danceTimeRef.current += delta;
+    const t = danceTimeRef.current;
 
-    if (danceTimeRef.current === delta) {
-      // Store original Y position on first frame
-      originalYRef.current = groupRef.current.position.y;
-    }
-
-    if (danceTimeRef.current >= duration) {
-      // Reset to original position after duration
-      groupRef.current.position.y = originalYRef.current;
-      groupRef.current.rotation.y = 0;
+    if (t >= duration) {
+      // Restore Y (will be overridden by controller on next frame anyway).
+      groupRef.current.position.y = groundYRef.current;
+      // Do NOT reset rotation.y - let the normal lerp smoothly return to the
+      // controller's facing direction on the next frame.
       danceTimeRef.current = 0;
+      isDancingRef.current = false;
       return true; // Animation complete
     }
 
-    // Spin around (2 full rotations)
+    // Continuous spin (2 full rotations over duration).
     const spinSpeed = (Math.PI * 4) / duration;
     groupRef.current.rotation.y += spinSpeed * delta;
 
-    // Bob up and down
-    const bobFrequency = 8; // Hz
+    // Bob up/down with fade-out in the last 20 % so the landing is smooth.
+    const fadeOut = Math.min(1, (duration - t) / (duration * 0.2));
+    const bobFrequency = 8;
     const bobAmplitude = 0.1;
-    const bob = Math.sin(danceTimeRef.current * bobFrequency * Math.PI * 2) * bobAmplitude;
-    groupRef.current.position.y = originalYRef.current + bob;
+    const bob = Math.sin(t * bobFrequency * Math.PI * 2) * bobAmplitude * fadeOut;
+    groupRef.current.position.y = groundYRef.current + bob;
 
     return false; // Animation still playing
   };
@@ -114,4 +123,44 @@ export function useIdleDetection(
   const now = Date.now();
   const timeSinceActivity = (now - lastActivityTime) / 1000; // Convert to seconds
   return timeSinceActivity >= idleThresholdSeconds;
+}
+
+/**
+ * Greeting animation - Forward bow on first load.
+ * Smoothly tilts the crab toward the camera then returns to upright.
+ */
+export function useGreetingAnimation(
+  groupRef: React.RefObject<Group | null>,
+  shouldGreet: boolean,
+  duration: number = 1.5
+) {
+  const greetTimeRef = useRef(0);
+  const originalRotXRef = useRef(0);
+
+  return (delta: number) => {
+    if (!shouldGreet || !groupRef.current) {
+      greetTimeRef.current = 0;
+      return false;
+    }
+
+    if (greetTimeRef.current === 0) {
+      // Capture original X rotation on the very first tick
+      originalRotXRef.current = groupRef.current.rotation.x;
+    }
+
+    greetTimeRef.current += delta;
+
+    if (greetTimeRef.current >= duration) {
+      groupRef.current.rotation.x = originalRotXRef.current;
+      greetTimeRef.current = 0;
+      return true; // Animation complete
+    }
+
+    // Smooth bow: sin curve over [0, π] → 0 → peak → 0
+    const progress = greetTimeRef.current / duration;
+    const bowAngle = Math.sin(progress * Math.PI) * 0.3; // ~17° max bow
+    groupRef.current.rotation.x = originalRotXRef.current - bowAngle;
+
+    return false;
+  };
 }

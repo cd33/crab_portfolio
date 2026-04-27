@@ -5,6 +5,7 @@ import { Suspense, lazy, useEffect, useState } from 'react';
 import { PCFSoftShadowMap } from 'three';
 import { Camera } from './Camera';
 import { Lights } from './Lights';
+import { ModelFallbackBox, SceneErrorBoundary } from './SceneErrorBoundary';
 
 const EnvironmentBackground = lazy(() =>
   import('@/entities/Environment/EnvironmentBackground').then((m) => ({
@@ -84,17 +85,25 @@ export function Scene({ showStats = import.meta.env.DEV }: SceneProps) {
       {/* Camera that follows the crab */}
       <Camera />
 
-      {/* Suspense for lazy loading 3D models */}
-      <Suspense fallback={null}>
-        {/* 3D environment background (sky, mountains, trees, particles) */}
-        <EnvironmentBackground />
+      {/* Each lazy model has its own Suspense + ErrorBoundary so a single
+          failed asset does not take down the entire scene. */}
+      <SceneErrorBoundary>
+        <Suspense fallback={null}>
+          <EnvironmentBackground />
+        </Suspense>
+      </SceneErrorBoundary>
 
-        {/* Blender workspace environment */}
-        <WorkspaceScene />
+      <SceneErrorBoundary>
+        <Suspense fallback={null}>
+          <WorkspaceScene />
+        </Suspense>
+      </SceneErrorBoundary>
 
-        {/* Player character */}
-        <Crab />
-      </Suspense>
+      <SceneErrorBoundary fallback={<ModelFallbackBox position={[0, 0.5, 0]} />}>
+        <Suspense fallback={null}>
+          <Crab />
+        </Suspense>
+      </SceneErrorBoundary>
     </Canvas>
   );
 }

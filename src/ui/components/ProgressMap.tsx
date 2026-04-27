@@ -5,6 +5,7 @@ import { INTERACTIVES_OBJECTS } from '@/utils/constants';
 import { useFocusTrap } from '@hooks/useFocusTrap';
 import { Check, Download, Mail, MapIcon, X } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
+import { Confetti } from './Confetti';
 
 /**
  * Progress Map - Shows discovery progress of interactive objects
@@ -133,7 +134,8 @@ export function ProgressMap() {
 
         {/* Congratulations Section (100% complete) */}
         {isComplete && (
-          <div className="rounded-lg border-2 border-tunic-green bg-tunic-green/10 p-6 text-center">
+          <div className="relative overflow-hidden rounded-lg border-2 border-tunic-green bg-tunic-green/10 p-6 text-center animate-bounceIn">
+            <Confetti />
             <h3 className="mb-2 text-2xl font-bold text-tunic-green">
               🎉 {t('progress.congratulations')}
             </h3>
