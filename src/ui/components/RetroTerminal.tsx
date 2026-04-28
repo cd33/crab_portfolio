@@ -52,6 +52,7 @@ export function RetroTerminal() {
     incrementDoorCount,
     unlockAccessory,
     konamiActivated,
+    setHackerActivated,
   } = useStore();
   const { t } = useI18n();
   const [lines, setLines] = useState<TerminalLine[]>([]);
@@ -678,6 +679,7 @@ export function RetroTerminal() {
       }
 
       case 'hacker':
+        setHackerActivated();
         setHackerModeActive(!hackerModeActive);
         if (!hackerModeActive) {
           addLine('', 'output');

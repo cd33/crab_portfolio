@@ -2,7 +2,7 @@ import { useGLTF } from '@react-three/drei';
 import { useEffect } from 'react';
 import { Color, Material, Mesh, Object3D } from 'three';
 
-export type AccessoryType = 'hat-pokemon' | 'hat-crisis' | null;
+export type AccessoryType = 'hat-pokemon' | 'hat-crisis' | 'hat-potter' | 'pixel-glasses' | null;
 
 interface AccessoryProps {
   type: AccessoryType;
@@ -18,6 +18,8 @@ interface AccessoryProps {
 export function Accessory({ type, head }: AccessoryProps) {
   const pokemonGltf = useGLTF('/models/hat_pokemon.glb');
   const crisisGltf = useGLTF('/models/hat_crisis.glb');
+  const potterGltf = useGLTF('/models/potter.glb');
+  const glassesGltf = useGLTF('/models/pixel_glasses.glb');
 
   useEffect(() => {
     if (!head || !type) return;
@@ -49,6 +51,16 @@ export function Accessory({ type, head }: AccessoryProps) {
           }
         }
       });
+    } else if (type === 'hat-potter') {
+      gltfScene = potterGltf.scene;
+      position = [0, 0, -0.38];
+      rotation = [-1.9, -0.9, 0.4];
+      scale = [1.6, 1.6, 1.6];
+    } else if (type === 'pixel-glasses') {
+      gltfScene = glassesGltf.scene;
+      position = [0, 0.51, -0.27];
+      rotation = [1, Math.PI, 3.25];
+      scale = [0.5, 0.5, 0.5];
     }
 
     if (gltfScene) {
@@ -60,7 +72,7 @@ export function Accessory({ type, head }: AccessoryProps) {
         head.remove(gltfScene!);
       };
     }
-  }, [head, type, pokemonGltf.scene, crisisGltf.scene]);
+  }, [head, type, pokemonGltf.scene, crisisGltf.scene, potterGltf.scene, glassesGltf.scene]);
 
   if (!type) return null;
 
@@ -70,3 +82,5 @@ export function Accessory({ type, head }: AccessoryProps) {
 // Préchargement des modèles pour performance
 useGLTF.preload('/models/hat_pokemon.glb');
 useGLTF.preload('/models/hat_crisis.glb');
+useGLTF.preload('/models/potter.glb');
+useGLTF.preload('/models/pixel_glasses.glb');

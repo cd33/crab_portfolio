@@ -1,4 +1,5 @@
 import type { InfoContent } from '@/types';
+import { decryptData, encryptData } from '@/utils/cryptoStorage';
 import type { AccessoryType } from '@entities/Crab/Accessory';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -101,6 +102,10 @@ interface StoreState {
   // Konami Code
   konamiActivated: boolean;
   setKonamiActivated: () => void;
+
+  // Hacker
+  hackerActivated: boolean;
+  setHackerActivated: () => void;
 
   // CV Modal state
   isCVModalOpen: boolean;
@@ -227,6 +232,10 @@ export const useStore = create<StoreState>()(
       konamiActivated: false,
       setKonamiActivated: () => set({ konamiActivated: true }),
 
+      // Hacker
+      hackerActivated: false,
+      setHackerActivated: () => set({ hackerActivated: true }),
+
       // CV Modal state
       isCVModalOpen: false,
       openCVModal: () => set({ isCVModalOpen: true }),
@@ -288,6 +297,7 @@ export const useStore = create<StoreState>()(
         isDoorUnlocked: state.isDoorUnlocked,
         mailCount: state.mailCount,
         konamiActivated: state.konamiActivated,
+        hackerActivated: state.hackerActivated,
         mugClickCount: state.mugClickCount,
         // Préférences utilisateur
         soundEnabled: state.soundEnabled,
@@ -299,15 +309,28 @@ export const useStore = create<StoreState>()(
         lampOn: state.lampOn,
         mainLightsOn: state.mainLightsOn,
       }),
-      // Sérialisation custom pour supporter les Set
+      // Sérialisation custom pour supporter les Set + chiffrement AES-GCM
       storage: {
-        getItem: (name) => {
+        getItem: async (name) => {
           const raw = localStorage.getItem(name);
           if (!raw) return null;
-          return JSON.parse(raw, reviver) as ReturnType<typeof JSON.parse>;
+          try {
+            const decrypted = await decryptData(raw);
+            return JSON.parse(decrypted, reviver) as ReturnType<typeof JSON.parse>;
+          } catch {
+            // Données corrompues ou non-chiffrées (migration depuis ancienne version)
+            try {
+              return JSON.parse(raw, reviver) as ReturnType<typeof JSON.parse>;
+            } catch {
+              localStorage.removeItem(name);
+              return null;
+            }
+          }
         },
-        setItem: (name, value) => {
-          localStorage.setItem(name, JSON.stringify(value, replacer));
+        setItem: async (name, value) => {
+          const serialized = JSON.stringify(value, replacer);
+          const encrypted = await encryptData(serialized);
+          localStorage.setItem(name, encrypted);
         },
         removeItem: (name) => {
           localStorage.removeItem(name);

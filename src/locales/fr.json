@@ -6,7 +6,9 @@
   },
   "accessories": {
     "hatPokemon": "Attrapez les tous !",
-    "hatCrisis": "Qui suis-je ?"
+    "hatCrisis": "Qui suis-je ?",
+    "hatPotter": "Tu es un sorcier Harry !",
+    "pixelGlasses": "Neo Vision"
   },
   "cheatDetected": {
     "title": "TRICHE DÉTECTÉE",

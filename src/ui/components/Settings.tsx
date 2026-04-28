@@ -41,11 +41,18 @@ export function Settings() {
   }, [keys.escape, toggleSettings]);
   const { locale, setLocale, t } = useI18n();
 
-  const accessories: Exclude<AccessoryType, null>[] = ['hat-pokemon', 'hat-crisis'];
+  const accessories: Exclude<AccessoryType, null>[] = [
+    'hat-pokemon',
+    'hat-crisis',
+    'hat-potter',
+    'pixel-glasses',
+  ];
 
   const accessoryIcons: Record<Exclude<AccessoryType, null>, string> = {
     'hat-pokemon': '⚡️',
     'hat-crisis': '🤔',
+    'hat-potter': '🧙',
+    'pixel-glasses': '🕶️',
   };
 
   if (!isSettingsOpen) return null;

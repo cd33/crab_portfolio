@@ -1,6 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useStore } from '../../src/store/useStore';
 
+// Mocker le chiffrement pour les tests du store (PBKDF2 trop lent pour les tests unitaires)
+// Les tests de cryptoStorage.ts couvrent le chiffrement réel
+vi.mock('../../src/utils/cryptoStorage', () => ({
+  encryptData: (plain: string) => Promise.resolve(plain),
+  decryptData: (encoded: string) => Promise.resolve(encoded),
+}));
+
 // Reset store and localStorage between tests
 beforeEach(() => {
   localStorage.clear();
@@ -278,16 +285,20 @@ describe('useStore', () => {
   });
 
   describe('Persist middleware', () => {
-    it('écrit dans localStorage sous la clé crab-portfolio-store', () => {
+    it('écrit dans localStorage sous la clé crab-portfolio-store', async () => {
       useStore.getState().incrementDoorCount();
+      // Attendre que le setItem async se termine
+      await new Promise((r) => setTimeout(r, 20));
       const raw = localStorage.getItem('crab-portfolio-store');
       expect(raw).not.toBeNull();
+      // Avec le mock identity, le contenu est du JSON pur
       const parsed = JSON.parse(raw!);
       expect(parsed.state.doorCount).toBe(1);
     });
 
-    it('sérialise correctement les Set (discoveredObjects)', () => {
+    it('sérialise correctement les Set (discoveredObjects)', async () => {
       useStore.getState().discoverObject('desk');
+      await new Promise((r) => setTimeout(r, 20));
       const raw = localStorage.getItem('crab-portfolio-store');
       expect(raw).not.toBeNull();
       const parsed = JSON.parse(raw!);
@@ -295,8 +306,9 @@ describe('useStore', () => {
       expect(parsed.state.discoveredObjects).toEqual({ __type: 'Set', values: ['desk'] });
     });
 
-    it('sérialise correctement les Set (unlockedAccessories)', () => {
+    it('sérialise correctement les Set (unlockedAccessories)', async () => {
       useStore.getState().unlockAccessory('hat-pokemon');
+      await new Promise((r) => setTimeout(r, 20));
       const raw = localStorage.getItem('crab-portfolio-store');
       expect(raw).not.toBeNull();
       const parsed = JSON.parse(raw!);
@@ -306,8 +318,8 @@ describe('useStore', () => {
       });
     });
 
-    it('restaure un Set depuis localStorage lors de la réhydratation', () => {
-      // Simuler une sauvegarde existante avec un Set sérialisé
+    it('restaure un Set depuis localStorage lors de la réhydratation', async () => {
+      // Simuler une sauvegarde existante avec un Set sérialisé (format plain JSON - fallback migration)
       const stored = {
         state: {
           discoveredObjects: { __type: 'Set', values: ['poster1', 'desk'] },
@@ -329,12 +341,11 @@ describe('useStore', () => {
         },
         version: 0,
       };
-      // Écrire directement dans localStorage via le storage custom (JSON pur, pas de replacer)
-      // Les valeurs __type:Set doivent être lues par notre reviver
+      // Écrire en JSON pur (migration depuis ancienne version sans chiffrement)
       localStorage.setItem('crab-portfolio-store', JSON.stringify(stored));
 
-      // Forcer la réhydratation du store persist
-      useStore.persist.rehydrate();
+      // Forcer la réhydratation du store persist (async car getItem est async)
+      await useStore.persist.rehydrate();
 
       const state = useStore.getState();
       expect(state.discoveredObjects).toBeInstanceOf(Set);
@@ -354,9 +365,10 @@ describe('useStore', () => {
       expect(state.mainLightsOn).toBe(false);
     });
 
-    it("n'écrit pas les états UI temporaires (isPanelOpen, isTerminalOpen, etc.)", () => {
+    it("n'écrit pas les états UI temporaires (isPanelOpen, isTerminalOpen, etc.)", async () => {
       useStore.getState().openTerminal();
       useStore.getState().openCVModal();
+      await new Promise((r) => setTimeout(r, 20));
       const raw = localStorage.getItem('crab-portfolio-store');
       if (!raw) return; // si persist lazy, ok
       const parsed = JSON.parse(raw!);

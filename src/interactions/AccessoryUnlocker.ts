@@ -19,9 +19,23 @@ export const UNLOCK_CONDITIONS = {
     type: 'crisis' as const,
     description: 'accessories.hatCrisis',
   },
+  'hat-potter': {
+    type: 'konami' as const,
+    description: 'accessories.hatPotter',
+    check: (store: ReturnType<typeof useStore.getState>): boolean => {
+      return store.konamiActivated;
+    },
+  },
+  'pixel-glasses': {
+    type: 'hacker' as const,
+    description: 'accessories.pixelGlasses',
+    check: (store: ReturnType<typeof useStore.getState>): boolean => {
+      return store.hackerActivated;
+    },
+  },
 } as {
   [key in Exclude<AccessoryType, null>]: {
-    type: 'discover-all' | 'crisis';
+    type: 'discover-all' | 'crisis' | 'konami' | 'hacker';
     description: string;
     check?: (store: ReturnType<typeof useStore.getState>) => boolean;
   };
@@ -60,7 +74,7 @@ export function useAccessoryUnlocker() {
     const interval = setInterval(checkUnlocks, 5000);
 
     return () => clearInterval(interval);
-  }, [store.discoveredObjects.size]);
+  }, [store.discoveredObjects.size, store.konamiActivated, store.hackerActivated]);
 }
 
 /**
@@ -90,7 +104,9 @@ export function getUnlockProgress(accessory: AccessoryType): {
         description: condition.description,
       };
     }
-    case 'crisis': {
+    case 'crisis':
+    case 'konami':
+    case 'hacker': {
       const isUnlocked = state.isAccessoryUnlocked(accessory);
       return {
         current: isUnlocked ? 1 : 0,
