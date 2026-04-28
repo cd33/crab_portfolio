@@ -1,4 +1,5 @@
 import { useStore } from '@/store/useStore';
+import { resumeAudioContext } from '@hooks/audioContext';
 import { useEffect, useRef } from 'react';
 
 /**
@@ -53,6 +54,8 @@ export function useAmbientMusic() {
     const tryPlayOnInteraction = async () => {
       if (hasUserInteracted.current) return;
       hasUserInteracted.current = true;
+      // iOS Safari requires AudioContext to be resumed inside a user-gesture
+      await resumeAudioContext();
       const audio = audioRef.current;
       if (audio && ambientMusicEnabled) {
         try {
@@ -92,16 +95,18 @@ export function useAmbientMusic() {
     if (!audio) return;
 
     if (ambientMusicEnabled) {
-      // La musique doit jouer
-      audio
-        .play()
-        .then(() => {
-          setAmbientMusicPlaying(true);
-        })
-        .catch(() => {
-          // Lecture automatique bloquée, on attend l'interaction
-          setAmbientMusicPlaying(false);
-        });
+      // Resume AudioContext first (iOS Safari requirement)
+      resumeAudioContext().then(() => {
+        audio
+          .play()
+          .then(() => {
+            setAmbientMusicPlaying(true);
+          })
+          .catch(() => {
+            // Lecture automatique bloquée, on attend l'interaction
+            setAmbientMusicPlaying(false);
+          });
+      });
     } else {
       // La musique ne doit pas jouer
       audio.pause();

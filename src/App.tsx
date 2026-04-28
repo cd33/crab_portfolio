@@ -46,6 +46,11 @@ const VirtualJoystick = lazy(() =>
 const MobileButtons = lazy(() =>
   import('@ui/components/MobileButtons').then((module) => ({ default: module.MobileButtons }))
 );
+const PortraitWarning = lazy(() =>
+  import('@ui/components/PortraitWarning').then((module) => ({
+    default: module.PortraitWarning,
+  }))
+);
 
 function App() {
   const { isSupported, isLoading, error } = useWebGLDetection();
@@ -161,6 +166,7 @@ function App() {
                 onFirstTouch={tryPlayMusic}
               />
               <MobileButtons onFirstTouch={tryPlayMusic} />
+              <PortraitWarning />
             </Suspense>
           )}
           {/* <DebugPanel /> */}

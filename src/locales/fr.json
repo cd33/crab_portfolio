@@ -1,4 +1,9 @@
 {
+  "portrait": {
+    "title": "Rotate your device",
+    "message": "Pour une meilleure expérience, passez en mode paysage.",
+    "dismiss": "Continuer quand même"
+  },
   "accessories": {
     "hatPokemon": "Attrapez les tous !",
     "hatCrisis": "Qui suis-je ?"

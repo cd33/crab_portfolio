@@ -88,8 +88,9 @@ test.describe('Controls Panel', () => {
     await dismissBtn.click();
     await expect(dismissBtn).not.toBeVisible({ timeout: 3_000 });
 
-    // Reload - localStorage has 'crab-portfolio-controls-seen' so controls should NOT reappear
-    await page.reload();
+    // Navigate to '/' - localStorage persists within the same browser context.
+    // page.goto() is more stable than page.reload() (avoids ERR_ABORTED flakiness).
+    await page.goto('/');
     await waitForScene(page);
     await dismissIntro(page);
 

@@ -3,12 +3,73 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
 import viteCompression from 'vite-plugin-compression';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     tailwindcss(),
     react(),
+
+    // Progressive Web App - offline + installable
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['crab.svg', 'og-image.png', 'robots.txt'],
+      manifest: {
+        name: 'Welcome to CrabCorp',
+        short_name: 'CrabCorp',
+        description: 'Portfolio interactif 3D - explore le bureau du crabe !',
+        theme_color: '#1a1a2e',
+        background_color: '#1a1a2e',
+        display: 'standalone',
+        orientation: 'landscape',
+        start_url: '/',
+        icons: [
+          {
+            src: 'crab.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any maskable',
+          },
+          {
+            src: 'og-image.png',
+            sizes: '1200x630',
+            type: 'image/png',
+          },
+        ],
+      },
+      workbox: {
+        // Cache-first for static assets (GLB models, sounds, textures)
+        runtimeCaching: [
+          {
+            urlPattern: /\/models\/.+\.glb$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'gltf-models',
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          {
+            urlPattern: /\/sounds\/.+\.(mp3|ogg|wav)$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'audio-assets',
+              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          {
+            urlPattern: /\/textures\/.+\.(png|jpg|webp|ktx2)$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'texture-assets',
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+        ],
+        // Precache the app shell + fallback HTML
+        additionalManifestEntries: [{ url: '/fallback.html', revision: null }],
+      },
+    }),
 
     // Gzip compression
     viteCompression({

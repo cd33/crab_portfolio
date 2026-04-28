@@ -7,6 +7,7 @@ import { useStore } from '@/store/useStore';
 import { useGLTF } from '@react-three/drei';
 import type { ThreeElements } from '@react-three/fiber';
 import { useFrame } from '@react-three/fiber';
+import { vibrate } from '@utils/haptic';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Mesh, MeshStandardMaterial, Vector3 } from 'three';
 
@@ -138,6 +139,7 @@ export function WorkspaceScene(props: ThreeElements['group']) {
     toggleLamp,
     toggleMainLights,
     isDoorUnlocked,
+    setClosestInteractable,
   } = useStore();
   const crabCtx = useCrabContext();
   const keys = useKeyboard();
@@ -206,6 +208,8 @@ export function WorkspaceScene(props: ThreeElements['group']) {
   // Gestionnaire d'interaction
   const handleMeshClick = useCallback(
     (name: string) => {
+      // Haptic feedback on every interaction (no-op on desktop / iOS)
+      vibrate(40);
       if (name === 'CV_Sheet') {
         openCVModal();
         discoverObject('cv_sheet');
@@ -310,6 +314,8 @@ export function WorkspaceScene(props: ThreeElements['group']) {
     if (next !== prevClosestRef.current) {
       prevClosestRef.current = next;
       setClosestGroup(next);
+      // Sync to store so MobileButtons can show the badge
+      setClosestInteractable(next);
       // Apply emissive highlight imperatively
       interactiveMeshes.forEach((mesh) => {
         const mat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;

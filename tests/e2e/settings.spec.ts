@@ -197,8 +197,9 @@ test.describe('Language persistence', () => {
     });
     await page.keyboard.press('Escape');
 
-    // Reload page - locale is stored in localStorage
-    await page.reload();
+    // Navigate to '/' - localStorage persists within the same browser context.
+    // page.goto() is more stable than page.reload() (avoids ERR_ABORTED flakiness).
+    await page.goto('/');
     await waitForScene(page);
     await dismissIntro(page);
     await dismissControls(page);

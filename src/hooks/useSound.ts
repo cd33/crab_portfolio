@@ -1,3 +1,4 @@
+import { resumeAudioContext } from '@hooks/audioContext';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 /**
@@ -107,6 +108,9 @@ export function useSound(
 
   const play = useCallback(() => {
     if (!enabled || !audioRef.current || !isLoaded) return;
+
+    // Resume AudioContext on iOS Safari (requires user-gesture context)
+    resumeAudioContext();
 
     // Only restart if not already playing (for loops)
     if (!isPlaying) {

@@ -162,7 +162,9 @@ export function ProgressMap() {
 
         {/* Help Text */}
         {!isComplete && (
-          <p className="mt-4 text-center text-sm text-tunic-steel/60">{t('scene.explore')}</p>
+          <p className="my-4 md:mb-0 text-center text-sm text-tunic-steel/60">
+            {t('scene.explore')}
+          </p>
         )}
       </div>
     </div>

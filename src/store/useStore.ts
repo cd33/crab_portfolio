@@ -127,6 +127,10 @@ interface StoreState {
   mobileInteract: boolean;
   setMobileInteract: (interact: boolean) => void;
   triggerMobileInteract: () => void;
+
+  // Closest interactable object (for mobile E-button badge)
+  closestInteractable: string | null;
+  setClosestInteractable: (key: string | null) => void;
 }
 
 export const useStore = create<StoreState>()(
@@ -259,6 +263,10 @@ export const useStore = create<StoreState>()(
         // Reset after a short delay to allow detection of the press
         setTimeout(() => set({ mobileInteract: false }), 100);
       },
+
+      // Closest interactable (updated from WorkspaceScene frame loop)
+      closestInteractable: null,
+      setClosestInteractable: (key) => set({ closestInteractable: key }),
 
       // Lamp state
       lampOn: false,

@@ -1,5 +1,6 @@
 import { useI18n } from '@/hooks/useI18n';
 import { useStore } from '@/store/useStore';
+import { vibrate } from '@utils/haptic';
 import { useCallback, useEffect, useRef } from 'react';
 
 interface MobileButtonsProps {
@@ -12,7 +13,8 @@ interface MobileButtonsProps {
  */
 export function MobileButtons({ onFirstTouch }: MobileButtonsProps) {
   const { t } = useI18n();
-  const { toggleSettings, toggleProgressMap, triggerMobileInteract } = useStore();
+  const { toggleSettings, toggleProgressMap, triggerMobileInteract, closestInteractable } =
+    useStore();
   const interactPressedRef = useRef(false);
   const hasTriggeredFirstTouch = useRef(false);
 
@@ -22,6 +24,7 @@ export function MobileButtons({ onFirstTouch }: MobileButtonsProps) {
       e.preventDefault();
       if (!interactPressedRef.current) {
         interactPressedRef.current = true;
+        vibrate(30);
         triggerMobileInteract();
 
         // Trigger first touch callback (for music autoplay)
@@ -48,12 +51,12 @@ export function MobileButtons({ onFirstTouch }: MobileButtonsProps) {
 
   return (
     <div className="fixed bottom-6 right-4 flex flex-col gap-3 z-50">
-      {/* Interact Button (E) */}
+      {/* Interact Button (E) - shows a pulsing badge when an object is nearby */}
       <button
         onTouchStart={handleInteractTouchStart}
         onTouchEnd={handleInteractTouchEnd}
         className="
-          w-16 h-16 rounded-full
+          relative w-16 h-16 rounded-full
           bg-gradient-to-b from-tunic-green to-tunic-green/80
           border-4 border-tunic-steel
           shadow-lg
@@ -62,11 +65,18 @@ export function MobileButtons({ onFirstTouch }: MobileButtonsProps) {
           flex items-center justify-center
           touch-none
         "
-        style={{ opacity: 0.8 }}
+        style={{ opacity: closestInteractable ? 1 : 0.8 }}
         aria-label={t('controls.interact')}
         type="button"
       >
         <span className="text-white text-2xl font-bold">E</span>
+        {/* Badge indicator: pulsing dot when an interactable is nearby */}
+        {closestInteractable && (
+          <span
+            className="absolute -top-1 -right-1 w-4 h-4 bg-tunic-sand rounded-full border-2 border-white animate-pulse"
+            aria-hidden="true"
+          />
+        )}
       </button>
 
       {/* Map Button (M) */}

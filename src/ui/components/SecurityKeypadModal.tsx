@@ -1,6 +1,7 @@
 import { useSound } from '@/hooks/useSound';
 import { useStore } from '@/store/useStore';
 import { useFocusTrap } from '@hooks/useFocusTrap';
+import { vibrate } from '@utils/haptic';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -39,6 +40,7 @@ export function SecurityKeypadModal() {
 
   const handleKeyPress = (digit: string) => {
     if (code.length < 6 && !isSuccess) {
+      vibrate(25);
       const newCode = code + digit;
       setCode(newCode);
 
@@ -64,6 +66,7 @@ export function SecurityKeypadModal() {
   };
 
   const handleClear = () => {
+    vibrate(20);
     setCode('');
     setFeedback('');
     setIsSuccess(false);

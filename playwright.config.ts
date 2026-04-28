@@ -20,6 +20,9 @@ export default defineConfig({
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    // Block service workers so vite-plugin-pwa does not intercept page.reload()
+    // in tests (causes ERR_ABORTED / frame detached errors in CI).
+    serviceWorkers: 'block',
   },
 
   projects: [

@@ -1,4 +1,9 @@
 {
+  "portrait": {
+    "title": "Rotate your device",
+    "message": "For the best experience, please switch to landscape mode.",
+    "dismiss": "Continue anyway"
+  },
   "accessories": {
     "hatPokemon": "Catch'em All!",
     "hatCrisis": "Who Am I?"

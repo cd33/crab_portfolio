@@ -27,6 +27,16 @@ async function dismissIntro(page: Page) {
   }
 }
 
+/** Dismiss the Controls panel if it is visible (locale-aware button label). */
+async function dismissControls(page: Page) {
+  const btn = page.getByRole('button', { name: /Compris|Understood/i });
+  const isVisible = await btn.isVisible().catch(() => false);
+  if (isVisible) {
+    await btn.click();
+    await btn.waitFor({ state: 'hidden', timeout: 3_000 });
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Interactions with Objects
 // ---------------------------------------------------------------------------
@@ -36,6 +46,7 @@ test.describe('Interactions with Objects', () => {
     await page.goto('/');
     await waitForScene(page);
     await dismissIntro(page);
+    await dismissControls(page);
   });
 
   test('should detect interact key (E) without crashing the scene', async ({ page }) => {

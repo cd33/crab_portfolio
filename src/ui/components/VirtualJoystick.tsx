@@ -76,9 +76,6 @@ export function VirtualJoystick({ onMove, onStop, onFirstTouch }: VirtualJoystic
         touchIdRef.current = null;
         setIsActive(false);
         setPosition({ x: 0, y: 0 });
-        if (knobRef.current) {
-          knobRef.current.style.transform = 'translate(-50%, -50%)';
-        }
         onStop();
       }
     };
@@ -103,9 +100,9 @@ export function VirtualJoystick({ onMove, onStop, onFirstTouch }: VirtualJoystic
       setPosition({ x: normalizedX, y: normalizedY });
       onMove({ x: normalizedX, y: normalizedY });
 
-      // Update knob visual position (preserve the -50% centering offset from Tailwind)
+      // Update knob visual position
       if (knobRef.current) {
-        knobRef.current.style.transform = `translate(calc(-50% + ${clampedX}px), calc(-50% + ${clampedY}px))`;
+        knobRef.current.style.transform = `translate(${clampedX}px, ${clampedY}px)`;
       }
     };
 
